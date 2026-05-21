@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STK - Sales Tracking System</title>
+    <!-- Google Fonts: Outfit for titles, Inter for UI text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for High Fidelity Dashboards -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+    <!-- Main App Container -->
+    <div id="app-root">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <span class="logo-icon"><i class="fa-solid fa-chart-line"></i></span>
+                    <span class="logo-text">STK <span class="logo-sub">System</span></span>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul id="menu-list">
+                    <!-- Nav items will be dynamically rendered here based on Role Permissions -->
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="version-info">
+                    <div class="ver-label">salestracking_web</div>
+                    <div class="ver-num">v1.0.1 (Build 471)</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Side Main Section -->
+        <main class="main-wrapper">
+            <!-- Top Navigation Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 id="page-title" class="page-title">แดชบอร์ด</h1>
+                </div>
+                
+                <div class="header-right">
+                    <!-- Live Agent Status (For Role B / All) -->
+                    <div class="agent-status-panel">
+                        <span class="status-indicator-dot online"></span>
+                        <select id="agent-status-select" class="status-select">
+                            <option value="online">ว่าง (Available)</option>
+                            <option value="break">พักเบรก (Break)</option>
+                            <option value="lunch">พักทานข้าว (Lunch)</option>
+                            <option value="offline">ออฟไลน์ (Offline)</option>
+                        </select>
+                    </div>
+
+                    <!-- Role Switcher for Demonstration -->
+                    <div class="role-switcher">
+                        <i class="fa-solid fa-user-shield role-icon"></i>
+                        <select id="role-select" class="role-select">
+                            <option value="role_b">Agent (Role B)</option>
+                            <option value="role_a" selected>Manager (Role A)</option>
+                            <option value="role_c">Viewer (Role C)</option>
+                            <option value="admin">System Admin</option>
+                        </select>
+                    </div>
+
+                    <!-- Notification Center -->
+                    <div class="notification-bell" id="notification-trigger">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="dropdown-header">
+                                <span>การแจ้งเตือน (Notifications)</span>
+                                <button id="clear-notifications" class="clear-btn">ล้างทั้งหมด</button>
+                            </div>
+                            <div class="dropdown-body" id="notification-list">
+                                <div class="empty-notifications">ไม่มีการแจ้งเตือนใหม่</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Profile -->
+                    <div class="user-profile">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="profile-details">
+                            <span class="user-name" id="user-display-name">สมชาย ใจดี</span>
+                            <span class="user-role-label" id="user-role-display">Manager</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <section class="content-viewport" id="app-content">
+                <!-- Content will be injected dynamically by app.js router -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Simulated Azure AD B2C Login Overlay -->
+    <div id="login-overlay" class="login-overlay active">
+        <div class="login-card-container">
+            <div class="login-brand">
+                <i class="fa-solid fa-chart-line brand-logo-icon"></i>
+                <h2>Sales Tracking System (STK)</h2>
+                <p>Thai Watsadu - โครงข่ายบันทึกยอดขายและการติดตามลูกค้า</p>
+            </div>
+            
+            <div class="login-card">
+                <div class="login-card-header">
+                    <h3>เข้าใช้งานระบบ (Azure AD Single Sign-On)</h3>
+                    <p>กรุณาลงชื่อเข้าใช้งานด้วยบัญชี Microsoft Azure ขององค์กร</p>
+                </div>
+                
+                <div class="login-card-body">
+                    <button id="microsoft-login-btn" class="microsoft-btn">
+                        <i class="fa-brands fa-microsoft"></i> ลงชื่อเข้าใช้งานด้วย Microsoft Account
+                    </button>
+                    
+                    <div class="divider">
+                        <span>หรือจำลองบทบาททันที</span>
+                    </div>
+
+                    <div class="quick-role-logins">
+                        <button class="quick-login-btn" data-role="role_a">
+                            <i class="fa-solid fa-user-tie"></i> เข้าใช้งานเป็น <strong>Manager (Role A)</strong>
+                        </button>
+                        <button class="quick-login-btn" data-role="role_b">
+                            <i class="fa-solid fa-headset"></i> เข้าใช้งานเป็น <strong>Agent (Role B)</strong>
+                        </button>
+                        <button class="quick-login-btn" data-role="role_c">
+                            <i class="fa-solid fa-eye"></i> เข้าใช้งานเป็น <strong>Viewer (Role C)</strong>
+                        </button>
+                        <button class="quick-login-btn" data-role="admin">
+                            <i class="fa-solid fa-user-gear"></i> เข้าใช้งานเป็น <strong>System Admin</strong>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="login-card-footer">
+                    <span>ระบบป้องกันความปลอดภัยข้อมูลองค์กรตามมาตรฐานสูงสุด</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
