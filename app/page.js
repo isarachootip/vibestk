@@ -106,6 +106,14 @@ export default function Home() {
     totalDealsCount: 0
   });
 
+  // Management Sub-Tab & Social Config
+  const [managementSubTab, setManagementSubTab] = useState("roles");
+  const [socialConfig, setSocialConfig] = useState({
+    facebook: { pageName: "", pageId: "", accessToken: "" },
+    line: { channelId: "", channelSecret: "", accessToken: "" }
+  });
+  const [showTokens, setShowTokens] = useState({ fb: false, line: false });
+
   const chatEndRef = useRef(null);
 
   // Helper to push a toast
@@ -148,6 +156,45 @@ export default function Home() {
     } catch (e) {
       setPermissions(LOCAL_STATE_PERMISSIONS);
     }
+  };
+
+  const fetchSocialConfig = async () => {
+    try {
+      const res = await fetch("/api/social-config");
+      if (res.ok) {
+        const data = await res.json();
+        setSocialConfig(data);
+      }
+    } catch (e) {
+      console.warn("Failed to fetch social config", e);
+    }
+  };
+
+  const saveSocialConfig = async () => {
+    try {
+      const res = await fetch("/api/social-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(socialConfig)
+      });
+      if (res.ok) {
+        showToast("สำเร็จ", "บันทึกการตั้งค่า Social Media เรียบร้อยแล้ว", "success");
+      } else {
+        showToast("ผิดพลาด", "ไม่สามารถบันทึกการตั้งค่าได้", "danger");
+      }
+    } catch (e) {
+      showToast("ผิดพลาด", "การเชื่อมต่อขัดข้อง", "danger");
+    }
+  };
+
+  const handleSocialConfigChange = (platform, field, value) => {
+    setSocialConfig(prev => ({
+      ...prev,
+      [platform]: {
+        ...prev[platform],
+        [field]: value
+      }
+    }));
   };
 
   const fetchOpportunities = async () => {
@@ -299,6 +346,7 @@ export default function Home() {
     fetchOpportunities();
     fetchAgents();
     fetchNotifications();
+    fetchSocialConfig();
   };
 
   useEffect(() => {
@@ -1530,38 +1578,182 @@ export default function Home() {
             </div>
           )}
 
-          {/* VIEW: ADMIN ROLE PERMISSIONS */}
+          {/* VIEW: ADMIN ROLE PERMISSIONS & INTEGRATIONS */}
           {activeTab === "management" && (
-            <div className="view-container management-container">
-              {["role_a", "role_b"].map(role => (
-                <div key={role} className="perm-role-panel">
-                  <div className="panel-header" style={{ marginBottom: "12px" }}>
-                    <h4 className="panel-title">
-                      <i className={`fa-solid ${role === "role_a" ? "fa-circle-user" : "fa-headset"}`} style={{ color: role === "role_a" ? "var(--color-primary)" : "var(--color-secondary)", marginRight: "8px" }}></i>
-                      ตัวควบคุมสิทธิ์เมนู: {role === "role_a" ? "Manager (Role A)" : "Agent (Role B)"}
-                    </h4>
+            <div className="view-container">
+              <div className="sub-tab-bar">
+                <button 
+                  className={`sub-tab-pill ${managementSubTab === "roles" ? "active" : ""}`}
+                  onClick={() => setManagementSubTab("roles")}
+                >
+                  เมนู & บทบาทการใช้งาน
+                </button>
+                <button 
+                  className={`sub-tab-pill ${managementSubTab === "social" ? "active" : ""}`}
+                  onClick={() => setManagementSubTab("social")}
+                >
+                  เชื่อมต่อ Social Media
+                </button>
+              </div>
+
+              {managementSubTab === "roles" && (
+                <div className="management-container">
+                  {["role_a", "role_b"].map(role => (
+                    <div key={role} className="perm-role-panel">
+                      <div className="panel-header" style={{ marginBottom: "12px" }}>
+                        <h4 className="panel-title">
+                          <i className={`fa-solid ${role === "role_a" ? "fa-circle-user" : "fa-headset"}`} style={{ color: role === "role_a" ? "var(--color-primary)" : "var(--color-secondary)", marginRight: "8px" }}></i>
+                          ตัวควบคุมสิทธิ์เมนู: {role === "role_a" ? "Manager (Role A)" : "Agent (Role B)"}
+                        </h4>
+                      </div>
+                      <p style={{ fontSize: "11px", color: "var(--text-secondary)", marginBottom: "20px" }}>สลับเปิด/ปิด เพื่อปรับเปลี่ยนโครงข่ายเมนูด้านข้างของบทบาททันทีในการทดสอบระบบ</p>
+                      
+                      <div className="perm-list">
+                        {["home", "opportunity", "call", "segment", "monitor", "dashboard", "report"].map(feat => {
+                          const checked = (permissions[role] || []).includes(feat);
+                          return (
+                            <div key={feat} className="perm-row-ctrl">
+                              <div className="perm-info">
+                                <div className="perm-info-title">{MENU_TITLES[feat]?.title}</div>
+                                <div className="perm-info-desc">สิทธิ์เข้าใช้เส้นทาง /{feat}</div>
+                              </div>
+                              <label className="switch-control">
+                                <input type="checkbox" checked={checked} onChange={(e) => handlePermissionToggle(role, feat, e.target.checked)} />
+                                <span className="switch-slider"></span>
+                              </label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {managementSubTab === "social" && (
+                <div className="management-container">
+                  {/* Facebook Settings */}
+                  <div className="social-setup-card">
+                    <div className="social-setup-header">
+                      <i className="fa-brands fa-facebook" style={{ color: "#1877F2" }}></i>
+                      <h4>Facebook Messenger API</h4>
+                    </div>
+                    <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>เชื่อมต่อกับ Meta for Developers เพื่อรับข้อความแชทจากเพจโดยอัตโนมัติ</p>
+
+                    <div className="social-form-group">
+                      <label>ชื่อเพจ (Page Name)</label>
+                      <input 
+                        type="text" 
+                        placeholder="เช่น Thai Watsadu" 
+                        value={socialConfig.facebook?.pageName || ""}
+                        onChange={(e) => handleSocialConfigChange('facebook', 'pageName', e.target.value)}
+                      />
+                    </div>
+                    <div className="social-form-group">
+                      <label>รหัสเพจ (Page ID)</label>
+                      <input 
+                        type="text" 
+                        placeholder="ระบุ Page ID" 
+                        value={socialConfig.facebook?.pageId || ""}
+                        onChange={(e) => handleSocialConfigChange('facebook', 'pageId', e.target.value)}
+                      />
+                    </div>
+                    <div className="social-form-group">
+                      <label>Page Access Token</label>
+                      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                        <input 
+                          type={showTokens.fb ? "text" : "password"} 
+                          placeholder="EAAGm0PX..." 
+                          value={socialConfig.facebook?.accessToken || ""}
+                          style={{ width: "100%", paddingRight: "40px" }}
+                          onChange={(e) => handleSocialConfigChange('facebook', 'accessToken', e.target.value)}
+                        />
+                        <button 
+                          className="copy-btn" 
+                          style={{ position: "absolute", right: "4px", border: "none", background: "none", padding: "6px" }}
+                          onClick={() => setShowTokens(prev => ({...prev, fb: !prev.fb}))}
+                        >
+                          <i className={`fa-solid ${showTokens.fb ? "fa-eye-slash" : "fa-eye"}`}></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="social-form-group" style={{ marginTop: "8px" }}>
+                      <label>Webhook URL (นำไปใส่ใน Meta App)</label>
+                      <div className="webhook-copy-box">
+                        <span className="webhook-url">https://your-domain.com/api/webhooks/facebook</span>
+                        <button className="copy-btn" onClick={() => navigator.clipboard.writeText("https://your-domain.com/api/webhooks/facebook")}>
+                          <i className="fa-regular fa-copy"></i> Copy
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <p style={{ fontSize: "11px", color: "var(--text-secondary)", marginBottom: "20px" }}>สลับเปิด/ปิด เพื่อปรับเปลี่ยนโครงข่ายเมนูด้านข้างของบทบาททันทีในการทดสอบระบบ</p>
-                  
-                  <div className="perm-list">
-                    {["home", "opportunity", "call", "segment", "monitor", "dashboard", "report"].map(feat => {
-                      const checked = (permissions[role] || []).includes(feat);
-                      return (
-                        <div key={feat} className="perm-row-ctrl">
-                          <div className="perm-info">
-                            <div className="perm-info-title">{MENU_TITLES[feat]?.title}</div>
-                            <div className="perm-info-desc">สิทธิ์เข้าใช้เส้นทาง /{feat}</div>
-                          </div>
-                          <label className="switch-control">
-                            <input type="checkbox" checked={checked} onChange={(e) => handlePermissionToggle(role, feat, e.target.checked)} />
-                            <span className="switch-slider"></span>
-                          </label>
-                        </div>
-                      );
-                    })}
+
+                  {/* LINE Settings */}
+                  <div className="social-setup-card">
+                    <div className="social-setup-header">
+                      <i className="fa-brands fa-line" style={{ color: "#00B900" }}></i>
+                      <h4>LINE Official Account API</h4>
+                    </div>
+                    <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>เชื่อมต่อกับ LINE Developers Console (Messaging API)</p>
+
+                    <div className="social-form-group">
+                      <label>Channel ID</label>
+                      <input 
+                        type="text" 
+                        placeholder="ระบุ Channel ID 10 หลัก" 
+                        value={socialConfig.line?.channelId || ""}
+                        onChange={(e) => handleSocialConfigChange('line', 'channelId', e.target.value)}
+                      />
+                    </div>
+                    <div className="social-form-group">
+                      <label>Channel Secret</label>
+                      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                        <input 
+                          type={showTokens.line ? "text" : "password"} 
+                          placeholder="ระบุ Channel Secret" 
+                          value={socialConfig.line?.channelSecret || ""}
+                          style={{ width: "100%", paddingRight: "40px" }}
+                          onChange={(e) => handleSocialConfigChange('line', 'channelSecret', e.target.value)}
+                        />
+                        <button 
+                          className="copy-btn" 
+                          style={{ position: "absolute", right: "4px", border: "none", background: "none", padding: "6px" }}
+                          onClick={() => setShowTokens(prev => ({...prev, line: !prev.line}))}
+                        >
+                          <i className={`fa-solid ${showTokens.line ? "fa-eye-slash" : "fa-eye"}`}></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="social-form-group">
+                      <label>Channel Access Token (Long-lived)</label>
+                      <input 
+                        type="text" 
+                        placeholder="eyJhbGciOiJIUzI1NiJ..." 
+                        value={socialConfig.line?.accessToken || ""}
+                        onChange={(e) => handleSocialConfigChange('line', 'accessToken', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="social-form-group" style={{ marginTop: "8px" }}>
+                      <label>Webhook URL (นำไปใส่ใน LINE Developers)</label>
+                      <div className="webhook-copy-box">
+                        <span className="webhook-url">https://your-domain.com/api/webhooks/line</span>
+                        <button className="copy-btn" onClick={() => navigator.clipboard.writeText("https://your-domain.com/api/webhooks/line")}>
+                          <i className="fa-regular fa-copy"></i> Copy
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end" }}>
+                    <button className="save-config-btn" onClick={saveSocialConfig}>
+                      <i className="fa-solid fa-cloud-arrow-up"></i>
+                      บันทึกการตั้งค่า
+                    </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           )}
 

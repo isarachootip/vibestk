@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS customers CASCADE;
 DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS permissions CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS social_configs CASCADE;
 
 -- 1. USERS TABLE (Azure AD SSO profiles fallback)
 CREATE TABLE users (
@@ -83,6 +84,12 @@ CREATE TABLE permissions (
     allowed_menus JSONB NOT NULL
 );
 
+-- 8. SOCIAL CONFIGS TABLE (Facebook & Line API Integrations)
+CREATE TABLE social_configs (
+    platform VARCHAR(50) PRIMARY KEY,
+    config JSONB NOT NULL
+);
+
 -- ==========================================================================
 -- SEED DATA INSERTIONS
 -- ==========================================================================
@@ -136,3 +143,8 @@ INSERT INTO permissions (role, allowed_menus) VALUES
 ('role_b', '["home", "opportunity", "call", "segment"]'::jsonb),
 ('role_c', '["home", "monitor", "dashboard", "report"]'::jsonb),
 ('admin', '["home", "opportunity", "call", "segment", "monitor", "dashboard", "report", "management"]'::jsonb);
+
+-- Insert Social Configs
+INSERT INTO social_configs (platform, config) VALUES
+('facebook', '{"pageName": "Thai Watsadu Official", "pageId": "105678912345678", "accessToken": "EAAGm0PX4ZC...mock...token"}'::jsonb),
+('line', '{"channelId": "1654321987", "channelSecret": "ab12cd34ef56gh78ij90kl12mn34op56", "accessToken": "eyJhbGciOiJIUzI1NiJ...mock...token"}'::jsonb);
