@@ -1631,126 +1631,97 @@ export default function Home() {
               )}
 
               {managementSubTab === "social" && (
-                <div className="management-container">
-                  {/* Facebook Settings */}
-                  <div className="social-setup-card">
-                    <div className="social-setup-header">
-                      <i className="fa-brands fa-facebook" style={{ color: "#1877F2" }}></i>
-                      <h4>Facebook Messenger API</h4>
-                    </div>
-                    <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>เชื่อมต่อกับ Meta for Developers เพื่อรับข้อความแชทจากเพจโดยอัตโนมัติ</p>
-
-                    <div className="social-form-group">
-                      <label>ชื่อเพจ (Page Name)</label>
-                      <input 
-                        type="text" 
-                        placeholder="เช่น Thai Watsadu" 
-                        value={socialConfig.facebook?.pageName || ""}
-                        onChange={(e) => handleSocialConfigChange('facebook', 'pageName', e.target.value)}
-                      />
-                    </div>
-                    <div className="social-form-group">
-                      <label>รหัสเพจ (Page ID)</label>
-                      <input 
-                        type="text" 
-                        placeholder="ระบุ Page ID" 
-                        value={socialConfig.facebook?.pageId || ""}
-                        onChange={(e) => handleSocialConfigChange('facebook', 'pageId', e.target.value)}
-                      />
-                    </div>
-                    <div className="social-form-group">
-                      <label>Page Access Token</label>
-                      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                        <input 
-                          type={showTokens.fb ? "text" : "password"} 
-                          placeholder="EAAGm0PX..." 
-                          value={socialConfig.facebook?.accessToken || ""}
-                          style={{ width: "100%", paddingRight: "40px" }}
-                          onChange={(e) => handleSocialConfigChange('facebook', 'accessToken', e.target.value)}
-                        />
-                        <button 
-                          className="copy-btn" 
-                          style={{ position: "absolute", right: "4px", border: "none", background: "none", padding: "6px" }}
-                          onClick={() => setShowTokens(prev => ({...prev, fb: !prev.fb}))}
-                        >
-                          <i className={`fa-solid ${showTokens.fb ? "fa-eye-slash" : "fa-eye"}`}></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="social-form-group" style={{ marginTop: "8px" }}>
-                      <label>Webhook URL (นำไปใส่ใน Meta App)</label>
-                      <div className="webhook-copy-box">
-                        <span className="webhook-url">https://your-domain.com/api/webhooks/facebook</span>
-                        <button className="copy-btn" onClick={() => navigator.clipboard.writeText("https://your-domain.com/api/webhooks/facebook")}>
-                          <i className="fa-regular fa-copy"></i> Copy
-                        </button>
-                      </div>
-                    </div>
+                <div className="social-connections-wrapper">
+                  <div className="social-connections-header">
+                    <h2>การเชื่อมต่อโซเชียล</h2>
+                    <p>เชื่อมต่อบัญชีโซเชียลมีเดียของคุณเพื่อเปิดใช้งานการโพสต์อัตโนมัติ</p>
                   </div>
-
-                  {/* LINE Settings */}
-                  <div className="social-setup-card">
-                    <div className="social-setup-header">
-                      <i className="fa-brands fa-line" style={{ color: "#00B900" }}></i>
-                      <h4>LINE Official Account API</h4>
-                    </div>
-                    <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>เชื่อมต่อกับ LINE Developers Console (Messaging API)</p>
-
-                    <div className="social-form-group">
-                      <label>Channel ID</label>
-                      <input 
-                        type="text" 
-                        placeholder="ระบุ Channel ID 10 หลัก" 
-                        value={socialConfig.line?.channelId || ""}
-                        onChange={(e) => handleSocialConfigChange('line', 'channelId', e.target.value)}
-                      />
-                    </div>
-                    <div className="social-form-group">
-                      <label>Channel Secret</label>
-                      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                        <input 
-                          type={showTokens.line ? "text" : "password"} 
-                          placeholder="ระบุ Channel Secret" 
-                          value={socialConfig.line?.channelSecret || ""}
-                          style={{ width: "100%", paddingRight: "40px" }}
-                          onChange={(e) => handleSocialConfigChange('line', 'channelSecret', e.target.value)}
-                        />
-                        <button 
-                          className="copy-btn" 
-                          style={{ position: "absolute", right: "4px", border: "none", background: "none", padding: "6px" }}
-                          onClick={() => setShowTokens(prev => ({...prev, line: !prev.line}))}
-                        >
-                          <i className={`fa-solid ${showTokens.line ? "fa-eye-slash" : "fa-eye"}`}></i>
-                        </button>
+                  <div className="social-connection-grid">
+                    {/* Facebook */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-fb">F</div>
+                        <div className="social-info">
+                          <h4>Facebook Page</h4>
+                          <span className="social-status status-active">1 บัญชีที่เชื่อมต่อ</span>
+                        </div>
+                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                      <div className="social-conn-card-bottom">
+                        <div className="connected-label">CONNECTED ACCOUNTS</div>
+                        <div className="connected-account-item">
+                          <span>One - Dish Meals</span>
+                          <button className="del-account-btn"><i className="fa-regular fa-trash-can"></i></button>
+                        </div>
                       </div>
                     </div>
-                    <div className="social-form-group">
-                      <label>Channel Access Token (Long-lived)</label>
-                      <input 
-                        type="text" 
-                        placeholder="eyJhbGciOiJIUzI1NiJ..." 
-                        value={socialConfig.line?.accessToken || ""}
-                        onChange={(e) => handleSocialConfigChange('line', 'accessToken', e.target.value)}
-                      />
-                    </div>
 
-                    <div className="social-form-group" style={{ marginTop: "8px" }}>
-                      <label>Webhook URL (นำไปใส่ใน LINE Developers)</label>
-                      <div className="webhook-copy-box">
-                        <span className="webhook-url">https://your-domain.com/api/webhooks/line</span>
-                        <button className="copy-btn" onClick={() => navigator.clipboard.writeText("https://your-domain.com/api/webhooks/line")}>
-                          <i className="fa-regular fa-copy"></i> Copy
-                        </button>
+                    {/* Instagram */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-ig">I</div>
+                        <div className="social-info">
+                          <h4>Instagram</h4>
+                          <span className="social-status status-active">1 บัญชีที่เชื่อมต่อ</span>
+                        </div>
+                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                      <div className="social-conn-card-bottom">
+                        <div className="connected-label">CONNECTED ACCOUNTS</div>
+                        <div className="connected-account-item">
+                          <span>ODM</span>
+                          <button className="del-account-btn"><i className="fa-regular fa-trash-can"></i></button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end" }}>
-                    <button className="save-config-btn" onClick={saveSocialConfig}>
-                      <i className="fa-solid fa-cloud-arrow-up"></i>
-                      บันทึกการตั้งค่า
-                    </button>
+                    {/* X (Twitter) */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-x">X</div>
+                        <div className="social-info">
+                          <h4>X (Twitter)</h4>
+                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
+                        </div>
+                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                    </div>
+
+                    {/* LinkedIn */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-li">in</div>
+                        <div className="social-info">
+                          <h4>LinkedIn</h4>
+                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
+                        </div>
+                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                    </div>
+
+                    {/* LINE OA */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-line">L</div>
+                        <div className="social-info">
+                          <h4>LINE OA</h4>
+                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
+                        </div>
+                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                    </div>
+
+                    {/* TikTok */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-tk">t</div>
+                        <div className="social-info">
+                          <h4>TikTok</h4>
+                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
+                        </div>
+                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

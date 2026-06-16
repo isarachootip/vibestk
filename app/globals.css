@@ -1378,122 +1378,160 @@ body {
     border-color: rgba(37, 99, 235, 0.2);
 }
 
-/* Social Setup Cards */
-.social-setup-card {
-    background-color: var(--bg-card);
+/* Social Connection UI */
+.social-connections-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.social-connections-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.social-connections-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.social-connections-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.social-connection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .social-connection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.social-conn-card {
+    background: #ffffff;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.social-conn-card-top {
     padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #ffffff;
+}
+
+.social-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.platform-fb { background: #1877f2; }
+.platform-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+.platform-x { background: #0f1419; }
+.platform-li { background: #0a66c2; }
+.platform-line { background: #06c755; }
+.platform-tk { background: #000000; }
+
+.social-info {
+    flex: 1;
+}
+
+.social-info h4 {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.social-status {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-active { color: var(--color-success); }
+.status-inactive { color: var(--text-muted); }
+
+.add-account-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.add-account-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: #cbd5e1;
+}
+
+.social-conn-card-bottom {
+    border-top: 1px dashed var(--border-color);
+    padding: 20px 24px;
+    background: #f8fafc;
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.social-setup-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+.connected-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.social-setup-header i {
-    font-size: 24px;
-}
-
-.social-setup-header h4 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.social-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.social-form-group label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
-
-.social-form-group input {
-    background-color: #FFFFFF;
+.connected-account-item {
+    background: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: var(--text-primary);
-    padding: 10px 14px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.social-form-group input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.webhook-copy-box {
+    padding: 12px 16px;
     display: flex;
     align-items: center;
-    background-color: #F8FAFC;
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-top: 8px;
     justify-content: space-between;
 }
 
-.webhook-url {
+.connected-account-item span {
     font-size: 13px;
-    font-family: monospace;
+    font-weight: 500;
     color: var(--text-primary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.copy-btn {
-    background-color: white;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.copy-btn:hover {
-    background-color: #F1F5F9;
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-}
-
-.save-config-btn {
-    align-self: flex-end;
-    background-color: var(--color-primary);
-    color: white;
+.del-account-btn {
+    background: transparent;
     border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
+    color: var(--text-muted);
     cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
+    font-size: 14px;
+    transition: color 0.2s;
 }
 
-.save-config-btn:hover {
-    background-color: #1D4ED8;
+.del-account-btn:hover {
+    color: var(--color-danger);
 }
 
 .perm-role-panel {
