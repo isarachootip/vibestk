@@ -112,6 +112,18 @@ export default function Home() {
     facebook: { pageName: "", pageId: "", accessToken: "" },
     line: { channelId: "", channelSecret: "", accessToken: "" }
   });
+
+  // Salesforce & Zwiz Simulator states
+  const [simTokenResponse, setSimTokenResponse] = useState(null);
+  const [simWebhookEvent, setSimWebhookEvent] = useState("client_text");
+  const [simWebhookPayload, setSimWebhookPayload] = useState("");
+  const [simWebhookResponse, setSimWebhookResponse] = useState(null);
+  const [simActionName, setSimActionName] = useState("CREATE_OPPORTUNITY");
+  const [simActionPayload, setSimActionPayload] = useState("");
+  const [simActionResponse, setSimActionResponse] = useState(null);
+  const [simTokenRequesting, setSimTokenRequesting] = useState(false);
+  const [simWebhookRequesting, setSimWebhookRequesting] = useState(false);
+  const [simActionRequesting, setSimActionRequesting] = useState(false);
   const [showTokens, setShowTokens] = useState({ fb: false, line: false });
 
   const chatEndRef = useRef(null);
@@ -769,6 +781,164 @@ export default function Home() {
       });
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  // Webhook presets inside the component to capture dynamic Date.now()
+  const webhookPresets = {
+    client_text: {
+      timestamp: Date.now(),
+      sender: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน", origin: "Facebook" },
+      recipient: { social_id: "105678912345678", display_name: "Thai Watsadu Official", origin: "Bot" },
+      channel: { channel_id: "71042617", channel_type: "Facebook", channel_name: "Thai Watsadu Main Page" },
+      messaging: [{ message: { text: "สวัสดีครับ สนใจสั่งซื้อเหล็กเส้นและปูนสำหรับเทฐานรากครับ", mid: `mid_fb_text_${Date.now()}`, type: "text" }, timestamp: Date.now() }]
+    },
+    client_image: {
+      timestamp: Date.now(),
+      sender: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน", origin: "Facebook" },
+      recipient: { social_id: "105678912345678", display_name: "Thai Watsadu Official", origin: "Bot" },
+      channel: { channel_id: "71042617", channel_type: "Facebook", channel_name: "Thai Watsadu Main Page" },
+      messaging: [{ message: { alt_text: "[Image Attachment]", mid: `mid_fb_img_${Date.now()}`, type: "image", attachments: [{ type: "image", payload: { title: "ตัวอย่างกระเบื้อง", url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" } }] }, timestamp: Date.now() }]
+    },
+    create_opp_action: {
+      timestamp: Date.now(),
+      sender: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน", origin: "Facebook" },
+      recipient: { social_id: "105678912345678", display_name: "Thai Watsadu Official", origin: "Bot" },
+      channel: { channel_id: "71042617", channel_type: "Facebook", channel_name: "Thai Watsadu Main Page" },
+      messaging: [{ action: [{ name: "CREATE_OPPORTUNITY", params: { opportunity_name: "Confirm Chat & Shop - เหล็กเส้นและปูน" } }], timestamp: Date.now() }]
+    },
+    create_case_action: {
+      timestamp: Date.now(),
+      sender: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน", origin: "Facebook" },
+      recipient: { social_id: "105678912345678", display_name: "Thai Watsadu Official", origin: "Bot" },
+      channel: { channel_id: "71042617", channel_type: "Facebook", channel_name: "Thai Watsadu Main Page" },
+      messaging: [{ action: [{ name: "CREATE_CASE", params: { subject: "ติดตามเรื่องการส่งมอบสินค้าล่าช้า" } }], timestamp: Date.now() }]
+    }
+  };
+
+  const actionPresets = {
+    CREATE_OPPORTUNITY: {
+      action: { name: "CREATE_OPPORTUNITY", params: { opportunity_name: "Confirm Chat & Shop - สั่งของเพิ่ม" } },
+      target: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน" },
+      channel: { channel_type: "Facebook" }
+    },
+    CREATE_CASE: {
+      action: { name: "CREATE_CASE", params: { subject: "แจ้งปัญหาสินค้าชำรุดเคลมสินค้า" } },
+      target: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน" },
+      channel: { channel_type: "Facebook" }
+    },
+    CLOSE_OPPORTUNITY: {
+      action: { name: "CLOSE_OPPORTUNITY", params: { opportunity_id: "OPP-308" } },
+      target: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน" },
+      channel: { channel_type: "Facebook" }
+    },
+    CLOSE_CASE: {
+      action: { name: "CLOSE_CASE", params: { case_id: "CASE-308" } },
+      target: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน" },
+      channel: { channel_type: "Facebook" }
+    },
+    CLOSE_CHAT: {
+      action: { name: "CLOSE_CHAT", params: {} },
+      target: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน" },
+      channel: { channel_type: "Facebook" }
+    }
+  };
+
+  useEffect(() => {
+    if (webhookPresets[simWebhookEvent]) {
+      setSimWebhookPayload(JSON.stringify(webhookPresets[simWebhookEvent], null, 2));
+    }
+  }, [simWebhookEvent]);
+
+  useEffect(() => {
+    if (actionPresets[simActionName]) {
+      setSimActionPayload(JSON.stringify(actionPresets[simActionName], null, 2));
+    }
+  }, [simActionName]);
+
+  const handleRequestToken = async () => {
+    setSimTokenRequesting(true);
+    try {
+      const res = await fetch("/services/oauth2/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+          assertion: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzTVZHOVpMMHBwR1A1VXJCcHhQN2xYRUNMYjFsSzVvR1ViVGRqalJqOVYycW4..."
+        })
+      });
+      const data = await res.json();
+      setSimTokenResponse(data);
+      if (res.ok) {
+        showToast("สิทธิ์สำเร็จ", "ได้รับ Salesforce Token เรียบร้อยแล้ว", "success");
+      } else {
+        showToast("สิทธิ์ล้มเหลว", data.error_description || "Error requesting token", "danger");
+      }
+    } catch (err) {
+      setSimTokenResponse({ error: "network_error", error_description: err.message });
+      showToast("ข้อผิดพลาด", err.message, "danger");
+    } finally {
+      setSimTokenRequesting(false);
+    }
+  };
+
+  const handleSendWebhook = async () => {
+    setSimWebhookRequesting(true);
+    try {
+      const token = simTokenResponse?.access_token || "mock_sf_token_abc123xyz789";
+      const res = await fetch("/services/apexrest/chat/v1/webhook", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: simWebhookPayload
+      });
+      const data = await res.json();
+      setSimWebhookResponse(data);
+      if (res.ok && data.status?.code === 1000) {
+        showToast("Webhook สำเร็จ", "ยิง Webhook ของ Zwiz เข้าสู่ระบบสำเร็จ", "success");
+        // Reload data to reflect changes
+        fetchOpportunities();
+        fetchNotifications();
+      } else {
+        showToast("Webhook ล้มเหลว", data.status?.description || "Error sending webhook", "danger");
+      }
+    } catch (err) {
+      setSimWebhookResponse({ error: "network_error", description: err.message });
+      showToast("ข้อผิดพลาด", err.message, "danger");
+    } finally {
+      setSimWebhookRequesting(false);
+    }
+  };
+
+  const handleSendAction = async () => {
+    setSimActionRequesting(true);
+    try {
+      const token = simTokenResponse?.access_token || "mock_sf_token_abc123xyz789";
+      const res = await fetch("/services/apexrest/v1/action/execute", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: simActionPayload
+      });
+      const data = await res.json();
+      setSimActionResponse(data);
+      if (res.ok && data.status?.code === 1000) {
+        showToast("Action สำเร็จ", "ประมวลผลคำสั่งสำเร็จ", "success");
+        // Reload data to reflect changes
+        fetchOpportunities();
+        fetchNotifications();
+      } else {
+        showToast("Action ล้มเหลว", data.status?.description || "Error sending action", "danger");
+      }
+    } catch (err) {
+      setSimActionResponse({ error: "network_error", description: err.message });
+      showToast("ข้อผิดพลาด", err.message, "danger");
+    } finally {
+      setSimActionRequesting(false);
     }
   };
 
@@ -1594,6 +1764,12 @@ export default function Home() {
                 >
                   เชื่อมต่อ Social Media
                 </button>
+                <button 
+                  className={`sub-tab-pill ${managementSubTab === "salesforce" ? "active" : ""}`}
+                  onClick={() => setManagementSubTab("salesforce")}
+                >
+                  Salesforce / Zwiz API
+                </button>
               </div>
 
               {managementSubTab === "roles" && (
@@ -1722,6 +1898,224 @@ export default function Home() {
                         <button className="add-account-btn">+ Add Account</button>
                       </div>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Salesforce / Zwiz API Integration & Simulator View */}
+              {managementSubTab === "salesforce" && (
+                <div className="salesforce-integration-wrapper" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                  <div className="salesforce-header" style={{ marginBottom: "8px" }}>
+                    <h2 style={{ fontSize: "20px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "4px" }}>Salesforce & Zwiz API Integration Hub</h2>
+                    <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                      บอร์ดควบคุมการเชื่อมต่อ API เลียนแบบ Salesforce เพื่อเชื่อมต่อกับ Zwiz Chatbot (LINE OA/FB/IG) เข้ากับ PostgreSQL โดยตรง
+                    </p>
+                  </div>
+
+                  {/* API Endpoints Catalog */}
+                  <div className="api-endpoints-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
+                    <div className="api-card" style={{ padding: "16px", borderRadius: "12px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <span style={{ fontSize: "10px", fontWeight: "700", background: "#10b981", color: "#fff", padding: "2px 6px", borderRadius: "4px" }}>POST</span>
+                        <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "600" }}><i className="fa-solid fa-circle-check" style={{ marginRight: "4px" }}></i> Active</span>
+                      </div>
+                      <h4 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "4px", fontFamily: "monospace" }}>/services/oauth2/token</h4>
+                      <p style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Salesforce OAuth Access Token generation endpoint</p>
+                    </div>
+
+                    <div className="api-card" style={{ padding: "16px", borderRadius: "12px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <span style={{ fontSize: "10px", fontWeight: "700", background: "#10b981", color: "#fff", padding: "2px 6px", borderRadius: "4px" }}>POST</span>
+                        <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "600" }}><i className="fa-solid fa-circle-check" style={{ marginRight: "4px" }}></i> Active</span>
+                      </div>
+                      <h4 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "4px", fontFamily: "monospace" }}>/services/apexrest/chat/v1/webhook</h4>
+                      <p style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Chat message and inline actions webhook ingest endpoint</p>
+                    </div>
+
+                    <div className="api-card" style={{ padding: "16px", borderRadius: "12px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <span style={{ fontSize: "10px", fontWeight: "700", background: "#10b981", color: "#fff", padding: "2px 6px", borderRadius: "4px" }}>POST</span>
+                        <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "600" }}><i className="fa-solid fa-circle-check" style={{ marginRight: "4px" }}></i> Active</span>
+                      </div>
+                      <h4 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "4px", fontFamily: "monospace" }}>/services/apexrest/v1/action/execute</h4>
+                      <p style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Standalone action (Create/Close Opp/Case) execution endpoint</p>
+                    </div>
+                  </div>
+
+                  {/* Simulator Grid */}
+                  <div className="simulator-grid" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "24px" }}>
+                    
+                    {/* Left Column: Controls */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                      
+                      {/* Step 1: OAuth */}
+                      <div className="sim-panel" style={{ padding: "20px", borderRadius: "12px", background: "var(--bg-surface)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        <h3 style={{ fontSize: "14px", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ display: "inline-flex", width: "24px", height: "24px", borderRadius: "50%", background: "var(--color-primary)", color: "#fff", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700" }}>1</span>
+                          จำลองการขอสิทธิ์ OAuth Token
+                        </h3>
+                        <p style={{ fontSize: "11px", color: "var(--text-secondary)" }}>ทดลองส่ง grant_type=jwt-bearer เพื่อรับ Salesforce mock token และ instance URL</p>
+                        <div>
+                          <button 
+                            className="btn btn-primary" 
+                            style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "36px", fontSize: "12px" }}
+                            onClick={handleRequestToken}
+                            disabled={simTokenRequesting}
+                          >
+                            {simTokenRequesting ? (
+                              <i className="fa-solid fa-spinner fa-spin"></i>
+                            ) : (
+                              <i className="fa-solid fa-key"></i>
+                            )}
+                            ขอรับสิทธิ์ Token
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Step 2: Webhook */}
+                      <div className="sim-panel" style={{ padding: "20px", borderRadius: "12px", background: "var(--bg-surface)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        <h3 style={{ fontSize: "14px", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ display: "inline-flex", width: "24px", height: "24px", borderRadius: "50%", background: "var(--color-primary)", color: "#fff", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700" }}>2</span>
+                          จำลอง Zwiz Webhook Ingest
+                        </h3>
+                        <p style={{ fontSize: "11px", color: "var(--text-secondary)" }}>จำลองเหตุการณ์แชทที่ลูกค้าพิมพ์ส่งมา หรือการกดเปิด/ปิด Opp จากฝั่ง Zwiz Bot</p>
+                        
+                        <div style={{ display: "flex", gap: "8px", flexDirection: "column" }}>
+                          <label style={{ fontSize: "11px", color: "var(--text-secondary)", fontWeight: "600" }}>เลือกประเภทเหตุการณ์:</label>
+                          <select 
+                            value={simWebhookEvent} 
+                            onChange={(e) => setSimWebhookEvent(e.target.value)}
+                            style={{ width: "100%", height: "36px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "#fff", padding: "0 10px", fontSize: "12px" }}
+                          >
+                            <option value="client_text">ลูกค้าทักแชทเข้ามา (Text Message)</option>
+                            <option value="client_image">ลูกค้าส่งรูปภาพแนบแชทเข้ามา (Image)</option>
+                            <option value="create_opp_action">บอทแจ้งเปิด Opportunity (CREATE_OPPORTUNITY)</option>
+                            <option value="create_case_action">บอทแจ้งเปิด Case (CREATE_CASE)</option>
+                          </select>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                          <label style={{ fontSize: "11px", color: "var(--text-secondary)", fontWeight: "600" }}>JSON Payload:</label>
+                          <textarea 
+                            value={simWebhookPayload}
+                            onChange={(e) => setSimWebhookPayload(e.target.value)}
+                            style={{ width: "100%", height: "150px", background: "#121212", border: "1px solid var(--border-color)", borderRadius: "6px", color: "#00ff66", padding: "10px", fontFamily: "monospace", fontSize: "11px", resize: "vertical" }}
+                          />
+                        </div>
+
+                        <div>
+                          <button 
+                            className="btn btn-secondary" 
+                            style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "36px", fontSize: "12px", background: "var(--color-secondary)", color: "#fff" }}
+                            onClick={handleSendWebhook}
+                            disabled={simWebhookRequesting}
+                          >
+                            {simWebhookRequesting ? (
+                              <i className="fa-solid fa-spinner fa-spin"></i>
+                            ) : (
+                              <i className="fa-solid fa-paper-plane"></i>
+                            )}
+                            ส่งข้อมูล Webhook
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Step 3: Standalone Action */}
+                      <div className="sim-panel" style={{ padding: "20px", borderRadius: "12px", background: "var(--bg-surface)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        <h3 style={{ fontSize: "14px", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ display: "inline-flex", width: "24px", height: "24px", borderRadius: "50%", background: "var(--color-primary)", color: "#fff", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700" }}>3</span>
+                          จำลอง Standalone Action Execute
+                        </h3>
+                        <p style={{ fontSize: "11px", color: "var(--text-secondary)" }}>เรียกสั่งงาน Action ภายใน Salesforce/STK โดยตรง</p>
+
+                        <div style={{ display: "flex", gap: "8px", flexDirection: "column" }}>
+                          <label style={{ fontSize: "11px", color: "var(--text-secondary)", fontWeight: "600" }}>เลือก Action:</label>
+                          <select 
+                            value={simActionName} 
+                            onChange={(e) => setSimActionName(e.target.value)}
+                            style={{ width: "100%", height: "36px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "#fff", padding: "0 10px", fontSize: "12px" }}
+                          >
+                            <option value="CREATE_OPPORTUNITY">CREATE_OPPORTUNITY (เปิดโอกาสขายใหม่)</option>
+                            <option value="CREATE_CASE">CREATE_CASE (เปิดเคสใหม่)</option>
+                            <option value="CLOSE_OPPORTUNITY">CLOSE_OPPORTUNITY (ปิดโอกาสขาย)</option>
+                            <option value="CLOSE_CASE">CLOSE_CASE (ปิดเคสการช่วยเหลือ)</option>
+                            <option value="CLOSE_CHAT">CLOSE_CHAT (สิ้นสุดเซสชันการคุย)</option>
+                          </select>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                          <label style={{ fontSize: "11px", color: "var(--text-secondary)", fontWeight: "600" }}>JSON Payload:</label>
+                          <textarea 
+                            value={simActionPayload}
+                            onChange={(e) => setSimActionPayload(e.target.value)}
+                            style={{ width: "100%", height: "150px", background: "#121212", border: "1px solid var(--border-color)", borderRadius: "6px", color: "#00ff66", padding: "10px", fontFamily: "monospace", fontSize: "11px", resize: "vertical" }}
+                          />
+                        </div>
+
+                        <div>
+                          <button 
+                            className="btn btn-secondary" 
+                            style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "36px", fontSize: "12px" }}
+                            onClick={handleSendAction}
+                            disabled={simActionRequesting}
+                          >
+                            {simActionRequesting ? (
+                              <i className="fa-solid fa-spinner fa-spin"></i>
+                            ) : (
+                              <i className="fa-solid fa-play"></i>
+                            )}
+                            ประมวลผล Action
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Right Column: Console Outputs */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                      <div className="console-panel" style={{ flex: 1, minHeight: "600px", padding: "20px", borderRadius: "12px", background: "#0b0f19", border: "1px solid #1e293b", display: "flex", flexDirection: "column" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1e293b", paddingBottom: "12px", marginBottom: "16px" }}>
+                          <span style={{ fontSize: "12px", fontWeight: "700", color: "#38bdf8", textTransform: "uppercase", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <i className="fa-solid fa-terminal"></i> Response Console
+                          </span>
+                          <button 
+                            onClick={() => { setSimTokenResponse(null); setSimWebhookResponse(null); setSimActionResponse(null); }}
+                            style={{ fontSize: "11px", color: "var(--text-secondary)", background: "transparent", border: "none", cursor: "pointer" }}
+                          >
+                            <i className="fa-solid fa-trash-can"></i> ล้างคอนโซล
+                          </button>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "20px", overflowY: "auto", flex: 1, maxHeight: "700px" }}>
+                          
+                          {/* Token Response */}
+                          <div>
+                            <div style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px", fontWeight: "600" }}>1. OAuth Token Response:</div>
+                            <pre style={{ margin: 0, padding: "12px", borderRadius: "8px", background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: "11px", fontFamily: "monospace", overflowX: "auto", whiteSpace: "pre-wrap" }}>
+                              {simTokenResponse ? JSON.stringify(simTokenResponse, null, 2) : "// ยังไม่มีการส่งข้อมูลขอ Token"}
+                            </pre>
+                          </div>
+
+                          {/* Webhook Response */}
+                          <div>
+                            <div style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px", fontWeight: "600" }}>2. Webhook Response:</div>
+                            <pre style={{ margin: 0, padding: "12px", borderRadius: "8px", background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: "11px", fontFamily: "monospace", overflowX: "auto", whiteSpace: "pre-wrap" }}>
+                              {simWebhookResponse ? JSON.stringify(simWebhookResponse, null, 2) : "// ยังไม่มีการยิงข้อมูล Webhook"}
+                            </pre>
+                          </div>
+
+                          {/* Action Response */}
+                          <div>
+                            <div style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px", fontWeight: "600" }}>3. Action Response:</div>
+                            <pre style={{ margin: 0, padding: "12px", borderRadius: "8px", background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: "11px", fontFamily: "monospace", overflowX: "auto", whiteSpace: "pre-wrap" }}>
+                              {simActionResponse ? JSON.stringify(simActionResponse, null, 2) : "// ยังไม่มีการยิงข้อมูล Action"}
+                            </pre>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               )}
