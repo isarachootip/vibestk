@@ -139,10 +139,10 @@ INSERT INTO chat_messages (opportunity_id, sender, text, time) VALUES
 
 -- Insert Permissions Matrix
 INSERT INTO permissions (role, allowed_menus) VALUES 
-('role_a', '["home", "opportunity", "monitor", "dashboard", "report"]'::jsonb),
-('role_b', '["home", "opportunity", "call", "segment"]'::jsonb),
+('role_a', '["home", "opportunity", "call", "case", "chat", "order", "monitor", "dashboard", "report"]'::jsonb),
+('role_b', '["home", "opportunity", "call", "case", "chat", "order", "segment"]'::jsonb),
 ('role_c', '["home", "monitor", "dashboard", "report"]'::jsonb),
-('admin', '["home", "opportunity", "call", "segment", "monitor", "dashboard", "report", "management"]'::jsonb);
+('admin', '["home", "opportunity", "call", "case", "chat", "order", "segment", "monitor", "dashboard", "report", "management"]'::jsonb);
 
 -- Insert Social Configs
 INSERT INTO social_configs (platform, config) VALUES
