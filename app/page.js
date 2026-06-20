@@ -2789,100 +2789,149 @@ export default function Home() {
               {managementSubTab === "social" && (
                 <div className="social-connections-wrapper">
                   <div className="social-connections-header">
-                    <h2>การเชื่อมต่อโซเชียล</h2>
-                    <p>เชื่อมต่อบัญชีโซเชียลมีเดียของคุณเพื่อเปิดใช้งานการโพสต์อัตโนมัติ</p>
+                    <h2>Social Channel Integration</h2>
+                    <p>เชื่อมต่อ LINE OA และ Facebook Page เพื่อรับข้อความจากลูกค้าเข้าสู่ระบบ Chat Console</p>
                   </div>
+
+                  {/* Webhook URLs */}
+                  <div style={{ background: '#EAF3FE', border: '1px solid var(--color-primary)', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '8px' }}><i className="fa-solid fa-link" style={{ marginRight: '6px' }}></i>Webhook URLs (ใช้ตั้งค่าใน Developer Console)</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, minWidth: '80px' }}>LINE:</span>
+                        <code style={{ flex: 1, background: '#fff', padding: '6px 10px', borderRadius: '4px', fontSize: '12px', border: '1px solid var(--border-color)' }}>https://vibestk.online/api/webhook/line</code>
+                        <button style={{ padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border-color)', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} onClick={() => { navigator.clipboard.writeText('https://vibestk.online/api/webhook/line'); showToast('Copied', 'LINE Webhook URL copied!', 'success'); }}>Copy</button>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, minWidth: '80px' }}>Facebook:</span>
+                        <code style={{ flex: 1, background: '#fff', padding: '6px 10px', borderRadius: '4px', fontSize: '12px', border: '1px solid var(--border-color)' }}>https://vibestk.online/api/webhook/facebook</code>
+                        <button style={{ padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border-color)', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} onClick={() => { navigator.clipboard.writeText('https://vibestk.online/api/webhook/facebook'); showToast('Copied', 'Facebook Webhook URL copied!', 'success'); }}>Copy</button>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="social-connection-grid">
-                    {/* Facebook */}
-                    <div className="social-conn-card">
-                      <div className="social-conn-card-top">
-                        <div className="social-icon-box platform-fb">F</div>
-                        <div className="social-info">
-                          <h4>Facebook Page</h4>
-                          <span className="social-status status-active">1 บัญชีที่เชื่อมต่อ</span>
-                        </div>
-                        <button className="add-account-btn">+ Add Account</button>
-                      </div>
-                      <div className="social-conn-card-bottom">
-                        <div className="connected-label">CONNECTED ACCOUNTS</div>
-                        <div className="connected-account-item">
-                          <span>One - Dish Meals</span>
-                          <button className="del-account-btn"><i className="fa-regular fa-trash-can"></i></button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Instagram */}
-                    <div className="social-conn-card">
-                      <div className="social-conn-card-top">
-                        <div className="social-icon-box platform-ig">I</div>
-                        <div className="social-info">
-                          <h4>Instagram</h4>
-                          <span className="social-status status-active">1 บัญชีที่เชื่อมต่อ</span>
-                        </div>
-                        <button className="add-account-btn">+ Add Account</button>
-                      </div>
-                      <div className="social-conn-card-bottom">
-                        <div className="connected-label">CONNECTED ACCOUNTS</div>
-                        <div className="connected-account-item">
-                          <span>ODM</span>
-                          <button className="del-account-btn"><i className="fa-regular fa-trash-can"></i></button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* X (Twitter) */}
-                    <div className="social-conn-card">
-                      <div className="social-conn-card-top">
-                        <div className="social-icon-box platform-x">X</div>
-                        <div className="social-info">
-                          <h4>X (Twitter)</h4>
-                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
-                        </div>
-                        <button className="add-account-btn">+ Add Account</button>
-                      </div>
-                    </div>
-
-                    {/* LinkedIn */}
-                    <div className="social-conn-card">
-                      <div className="social-conn-card-top">
-                        <div className="social-icon-box platform-li">in</div>
-                        <div className="social-info">
-                          <h4>LinkedIn</h4>
-                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
-                        </div>
-                        <button className="add-account-btn">+ Add Account</button>
-                      </div>
-                    </div>
-
                     {/* LINE OA */}
                     <div className="social-conn-card">
                       <div className="social-conn-card-top">
                         <div className="social-icon-box platform-line">L</div>
                         <div className="social-info">
                           <h4>LINE OA</h4>
-                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
+                          <span className={`social-status ${socialConfig?.line?.accessToken ? 'status-active' : 'status-inactive'}`}>{socialConfig?.line?.accessToken ? 'เชื่อมต่อแล้ว' : 'ยังไม่ได้เชื่อมต่อ'}</span>
                         </div>
-                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                      <div className="social-conn-card-bottom">
+                        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Channel ID</label>
+                            <input type="text" defaultValue={socialConfig?.line?.channelId || ''} id="line-channel-id" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Channel Secret</label>
+                            <input type="password" defaultValue={socialConfig?.line?.channelSecret || ''} id="line-channel-secret" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Channel Access Token</label>
+                            <input type="password" defaultValue={socialConfig?.line?.accessToken || ''} id="line-access-token" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <button style={{ padding: '8px', background: '#06C755', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                            const config = {
+                              channelId: document.getElementById('line-channel-id').value,
+                              channelSecret: document.getElementById('line-channel-secret').value,
+                              accessToken: document.getElementById('line-access-token').value
+                            };
+                            await saveSocialConfig('line', config);
+                            showToast('LINE', 'LINE OA credentials saved!', 'success');
+                          }}><i className="fa-solid fa-floppy-disk" style={{ marginRight: '4px' }}></i>Save LINE Config</button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* TikTok */}
+                    {/* Facebook */}
                     <div className="social-conn-card">
                       <div className="social-conn-card-top">
-                        <div className="social-icon-box platform-tk">t</div>
+                        <div className="social-icon-box platform-fb">F</div>
                         <div className="social-info">
-                          <h4>TikTok</h4>
-                          <span className="social-status status-inactive">0 บัญชีที่เชื่อมต่อ</span>
+                          <h4>Facebook Page</h4>
+                          <span className={`social-status ${socialConfig?.facebook?.accessToken ? 'status-active' : 'status-inactive'}`}>{socialConfig?.facebook?.accessToken ? 'เชื่อมต่อแล้ว' : 'ยังไม่ได้เชื่อมต่อ'}</span>
                         </div>
-                        <button className="add-account-btn">+ Add Account</button>
+                      </div>
+                      <div className="social-conn-card-bottom">
+                        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Page ID</label>
+                            <input type="text" defaultValue={socialConfig?.facebook?.pageId || ''} id="fb-page-id" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>App Secret</label>
+                            <input type="password" defaultValue={socialConfig?.facebook?.appSecret || ''} id="fb-app-secret" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Page Access Token</label>
+                            <input type="password" defaultValue={socialConfig?.facebook?.accessToken || ''} id="fb-access-token" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Verify Token</label>
+                            <input type="text" defaultValue={socialConfig?.facebook?.verifyToken || 'stk_fb_verify_2026'} id="fb-verify-token" style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                          </div>
+                          <button style={{ padding: '8px', background: '#1877F2', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                            const config = {
+                              pageId: document.getElementById('fb-page-id').value,
+                              appSecret: document.getElementById('fb-app-secret').value,
+                              accessToken: document.getElementById('fb-access-token').value,
+                              verifyToken: document.getElementById('fb-verify-token').value,
+                              pageName: socialConfig?.facebook?.pageName || 'Facebook Page'
+                            };
+                            await saveSocialConfig('facebook', config);
+                            showToast('Facebook', 'Facebook credentials saved!', 'success');
+                          }}><i className="fa-solid fa-floppy-disk" style={{ marginRight: '4px' }}></i>Save Facebook Config</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Instagram (coming soon) */}
+                    <div className="social-conn-card">
+                      <div className="social-conn-card-top">
+                        <div className="social-icon-box platform-ig">I</div>
+                        <div className="social-info">
+                          <h4>Instagram</h4>
+                          <span className="social-status status-inactive">Coming Soon</span>
+                        </div>
+                        <button className="add-account-btn" disabled>+ Add Account</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Setup Guide */}
+                  <div style={{ marginTop: '20px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '16px' }}>
+                    <h4 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '12px' }}><i className="fa-solid fa-book" style={{ marginRight: '6px', color: 'var(--color-primary)' }}></i>วิธีตั้งค่า</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div>
+                        <h5 style={{ fontSize: '12px', fontWeight: 600, color: '#06C755', marginBottom: '6px' }}>LINE OA Setup</h5>
+                        <ol style={{ fontSize: '11px', color: 'var(--text-secondary)', paddingLeft: '16px', lineHeight: '1.8' }}>
+                          <li>ไปที่ <strong>LINE Developers Console</strong></li>
+                          <li>เลือก Messaging API channel</li>
+                          <li>คัดลอก Channel ID, Secret, Access Token มาใส่</li>
+                          <li>ตั้ง Webhook URL เป็น URL ด้านบน</li>
+                          <li>เปิด <strong>Use webhook</strong></li>
+                        </ol>
+                      </div>
+                      <div>
+                        <h5 style={{ fontSize: '12px', fontWeight: 600, color: '#1877F2', marginBottom: '6px' }}>Facebook Setup</h5>
+                        <ol style={{ fontSize: '11px', color: 'var(--text-secondary)', paddingLeft: '16px', lineHeight: '1.8' }}>
+                          <li>ไปที่ <strong>Meta Developer Console</strong></li>
+                          <li>สร้าง App → เพิ่ม Messenger product</li>
+                          <li>คัดลอก App Secret, Page Access Token มาใส่</li>
+                          <li>ตั้ง Webhook URL + Verify Token ตามด้านบน</li>
+                          <li>Subscribe to <strong>messages</strong> event</li>
+                        </ol>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Salesforce / Zwiz API Integration & Simulator View */}
+
               {managementSubTab === "salesforce" && (
                 <div className="salesforce-integration-wrapper" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                   <div className="salesforce-header" style={{ marginBottom: "8px" }}>
