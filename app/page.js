@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // ==========================================================================
 // LOCAL STATE DEFAULTS (Resilient Dual-Mode Fallback data)
 // ==========================================================================
 const LOCAL_STATE_PERMISSIONS = {
-  role_a: ["home", "opportunity", "monitor", "dashboard", "report"],
-  role_b: ["home", "opportunity", "call", "segment"],
+  role_a: ["home", "opportunity", "call", "case", "chat", "order", "monitor", "dashboard", "report"],
+  role_b: ["home", "opportunity", "call", "case", "chat", "order", "segment"],
   role_c: ["home", "monitor", "dashboard", "report"],
-  admin: ["home", "opportunity", "call", "segment", "monitor", "dashboard", "report", "management"]
+  admin: ["home", "opportunity", "call", "case", "chat", "order", "segment", "monitor", "dashboard", "report", "management"]
 };
 
 const LOCAL_STATE_AGENTS = [
@@ -40,10 +40,75 @@ const LOCAL_STATE_CUSTOMERS = [
   { code: "CUST-806", name: "บจก. เอสเตท พร็อพเพอร์ตี้", segment: "VIP Builder", province: "สมุทรสาคร", last_order: "420,000 บาท", last_contact: "2026-05-14", status: "ติดตามด่วน" }
 ];
 
+const LOCAL_STATE_CASES = [
+  { id: "CASE-1001", case_number: "18594038", account_name: "Sales103 Wellermoz", subject: "Re: ค้นหาตัวแทนจำหน่ายในพื้นที่ | อุปกรณ์อัจฉริยะสวมใส่ได้ (Smart Wearables) - ส่งตรงจากโรงงาน", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Medium", status: "new", pending_type: null, pending_status: "", case_origin: "Email", case_record_type: "CDS", bu: "CDS", owner: "CTO ADMIN", contact_name: "คุณสมศักดิ์ รักเรียน", contact_phone: "081-234-XXXX", contact_email: "somsak@example.com", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0.00, parent_case: null, created_at: "2026-06-18T09:00:00Z", updated_at: "2026-06-18T09:30:00Z", chatter_posts: [{ user: "CTO ADMIN", avatar: null, action: "Case created", timestamp: "10m ago", details: { account_name: "Sales103 Wellermoz", case_number: "18594038", case_record_type: "CDS", priority: "Medium", subject: "Re: ค้นหาตัวแทนจำหน่ายในพื้นที่ | อุปกรณ์อัจฉริยะสวมใส่ได้ (Smart Wearables) - ส่งตรงจากโรงงาน" } }] },
+  { id: "CASE-1002", case_number: "18594039", account_name: "Benji Corp", subject: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้าง", type: "Inquiry", case_reason: "Service", root_cause: null, priority: "Medium", status: "new", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "คุณพรเพ็ญ ดีงาม", contact_phone: "089-456-XXXX", contact_email: "pornpen@example.com", is_vip: true, chat_channel_name: "Line", chat_status_flag: "Active", chat_wait_minutes: 2.50, parent_case: null, created_at: "2026-06-18T10:00:00Z", updated_at: "2026-06-18T10:00:00Z", chatter_posts: [{ user: "System", avatar: null, action: "Case created", timestamp: "5m ago", details: { account_name: "Benji Corp", case_number: "18594039", case_record_type: "CDS", priority: "Medium", subject: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้าง" } }] },
+  { id: "CASE-1003", case_number: "18594040", account_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", subject: "ติดตามสถานะการจัดส่งคำสั่งซื้อ #ORD-8821", type: "Complaint", case_reason: "Delivery", root_cause: "Delivery", priority: "Critical", status: "pending-customer", pending_type: "Pending Customer", pending_status: "Pending Customer", case_origin: "Email", case_record_type: "CDS", bu: "CDS", owner: "นภา สุขดี", contact_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", contact_phone: "083-294-XXXX", contact_email: "charoen@example.com", is_vip: true, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: "CASE-1001", created_at: "2026-06-16T14:00:00Z", updated_at: "2026-06-17T16:00:00Z", chatter_posts: [{ user: "นภา สุขดี", avatar: null, action: "Status changed", timestamp: "1d ago", details: { status: "pending-customer" } }, { user: "System", avatar: null, action: "Case created", timestamp: "2d ago", details: { account_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", case_number: "18594040", case_record_type: "CDS", priority: "Critical", subject: "ติดตามสถานะการจัดส่งคำสั่งซื้อ #ORD-8821" } }] },
+  { id: "CASE-1004", case_number: "18594041", account_name: "คุณกิตติธัช", subject: "แจ้งปัญหาระบบชำระเงินออนไลน์ล้มเหลว", type: "Complaint", case_reason: "Service", root_cause: "Service", priority: "High", status: "pending-internal", pending_type: "Pending Internal", pending_status: "Pending Internal", case_origin: "Telephone", case_record_type: "CDS", bu: "CDS", owner: "สมเกียรติ ปัญญา", contact_name: "คุณกิตติธัช", contact_phone: "082-551-XXXX", contact_email: "kittithat@example.com", is_vip: false, chat_channel_name: "Telephone", chat_status_flag: "", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-17T08:00:00Z", updated_at: "2026-06-18T08:00:00Z", chatter_posts: [{ user: "สมเกียรติ ปัญญา", avatar: null, action: "Case updated", timestamp: "2h ago", details: { status: "pending-internal" } }] },
+  { id: "CASE-1005", case_number: "18594042", account_name: "คุณวิลาวัณย์", subject: "เคลมประกันสินค้า — เครื่องปรับอากาศไม่เย็น", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Medium", status: "solved", pending_type: null, pending_status: "", case_origin: "Facebook", case_record_type: "CDS", bu: "CDS", owner: "ธนาวุฒิ มีชัย", contact_name: "คุณวิลาวัณย์", contact_phone: "085-442-XXXX", contact_email: "wilawan@example.com", is_vip: false, chat_channel_name: "Facebook", chat_status_flag: "Closed", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-14T10:00:00Z", updated_at: "2026-06-18T07:00:00Z", chatter_posts: [{ user: "ธนาวุฒิ มีชัย", avatar: null, action: "Case resolved", timestamp: "3h ago", details: {} }] },
+  { id: "CASE-1006", case_number: "18594043", account_name: "รับเหมาครบวงจร ช่างณรงค์", subject: "ขอคืนสินค้า — สั่งซื้อผิดรุ่น", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Low", status: "closed", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: "พัชรา สิงห์โต", contact_name: "รับเหมาครบวงจร ช่างณรงค์", contact_phone: "088-123-XXXX", contact_email: "narongchai@example.com", is_vip: false, chat_channel_name: "Line", chat_status_flag: "Closed", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-10T09:00:00Z", updated_at: "2026-06-15T17:00:00Z", chatter_posts: [] },
+  { id: "CASE-1007", case_number: "18594044", account_name: "Unknown Bot", subject: "Spam — ข้อความโฆษณาจาก Bot", type: "Complaint", case_reason: "Service", root_cause: null, priority: "Low", status: "spam", pending_type: null, pending_status: "", case_origin: "Facebook", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "Unknown Bot", contact_phone: "", contact_email: "", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-18T06:00:00Z", updated_at: "2026-06-18T06:00:00Z", chatter_posts: [] },
+  { id: "CASE-1008", case_number: "18594045", account_name: "คุณสมศักดิ์ รักเรียน", subject: "สอบถามโปรโมชั่นกระเบื้อง — ซ้ำกับ CASE-1001", type: "Complaint", case_reason: "Product", root_cause: null, priority: "Low", status: "duplicate", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "คุณสมศักดิ์ รักเรียน", contact_phone: "081-234-XXXX", contact_email: "somsak@example.com", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: "CASE-1001", created_at: "2026-06-18T09:05:00Z", updated_at: "2026-06-18T09:05:00Z", chatter_posts: [] }
+];
+
+const LOCAL_STATE_CHAT_SESSIONS = [
+  { id: "CHAT-001", customer_name: "Benji", channel: "line", status: "active", unread: 2, last_message: "ติดต่อแอดมินค่ะ", last_time: "2m ago", account: "Benji Corp", phone: "081-234-XXXX", opportunity_id: "OPP-301", case_id: null, messages: [
+    { sender: "customer", text: "สวัสดีค่ะ สนใจสินค้า Smart Wearables", time: "26-May-26 15:45" },
+    { sender: "bot", text: "(CENNI เป็น AI ChatBot ที่อาจให้ข้อมูลหรือคำตอบคลาดเคลื่อนได้ในบางครั้ง)", time: "26-May-26 15:45" },
+    { sender: "bot", text: "สิ่งที่ฉันไม่สามารถทำได้:\n⛔ แจ้งรายละเอียดโปรโมชั่น คำสั่ง หรือจำนวนสินค้าคงเหลือ โดยลูกค้าสามารถสอบถามกับพนักงานในแอพที่รีไดยตรงได้ เพียงแจ้ง CENNI ว่าต้องการสอบถามพนักงานได้เลยค่ะ", time: "26-May-26 15:46" },
+    { sender: "customer", text: "ติดต่อแอดมินค่ะ", time: "26-May-26 15:49" },
+    { sender: "agent", text: "CENNI ขอส่งต่อการสนทนาของเราให้กับทีมบริการลูกค้า เพื่อช่วยเหลือคุณอย่างเหมาะสมนะ 🌟 โปรดรอสักครู่นะคะ", time: "26-May-26 15:49" }
+  ] },
+  { id: "CHAT-002", customer_name: "คุณสมศักดิ์", channel: "facebook", status: "active", unread: 0, last_message: "ขอบคุณครับ รอติดตาม", last_time: "15m ago", account: "Sales103 Wellermoz", phone: "081-234-XXXX", opportunity_id: null, case_id: "CASE-1001", messages: [
+    { sender: "customer", text: "สอบถามเรื่อง Smart Wearables ที่สั่งไปครับ", time: "18-Jun-26 09:00" },
+    { sender: "agent", text: "สวัสดีครับ คุณสมศักดิ์ ขอตรวจสอบข้อมูลให้สักครู่นะครับ", time: "18-Jun-26 09:05" },
+    { sender: "agent", text: "ตรวจสอบแล้วครับ สินค้าอยู่ระหว่างจัดส่ง คาดว่าจะถึงภายใน 2-3 วันทำการ", time: "18-Jun-26 09:10" },
+    { sender: "customer", text: "ขอบคุณครับ รอติดตาม", time: "18-Jun-26 09:12" }
+  ] },
+  { id: "CHAT-003", customer_name: "คุณวิลาวัณย์", channel: "facebook", status: "waiting", unread: 1, last_message: "รบกวนช่วยเช็คสถานะเคลมให้หน่อยค่ะ", last_time: "30m ago", account: "คุณวิลาวัณย์", phone: "085-442-XXXX", opportunity_id: null, case_id: "CASE-1005", messages: [
+    { sender: "customer", text: "รบกวนช่วยเช็คสถานะเคลมให้หน่อยค่ะ", time: "18-Jun-26 08:30" }
+  ] },
+  { id: "CHAT-004", customer_name: "คุณพรเพ็ญ", channel: "line", status: "active", unread: 0, last_message: "ได้เลยค่ะ ส่งใบเสนอราคาให้ทาง email นะคะ", last_time: "1h ago", account: "Benji Corp", phone: "089-456-XXXX", opportunity_id: "OPP-302", case_id: null, messages: [
+    { sender: "customer", text: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้างค่ะ", time: "18-Jun-26 08:00" },
+    { sender: "agent", text: "สวัสดีค่ะ คุณพรเพ็ญ ยินดีให้บริการค่ะ ต้องการขนาดไหนคะ?", time: "18-Jun-26 08:05" },
+    { sender: "customer", text: "ขนาด 12mm ประมาณ 200 เส้นค่ะ", time: "18-Jun-26 08:10" },
+    { sender: "agent", text: "ได้เลยค่ะ ส่งใบเสนอราคาให้ทาง email นะคะ", time: "18-Jun-26 08:15" }
+  ] },
+  { id: "CHAT-005", customer_name: "ช่างณรงค์", channel: "line", status: "closed", unread: 0, last_message: "ปิดการสนทนา", last_time: "2h ago", account: "รับเหมาครบวงจร ช่างณรงค์", phone: "088-123-XXXX", opportunity_id: null, case_id: "CASE-1006", messages: [
+    { sender: "system", text: "Chat closed by agent", time: "18-Jun-26 07:00" }
+  ] }
+];
+
+const LOCAL_STATE_BOT_RULES = [
+  { id: "BOT-001", name: "(OPT) Confirm DA", enabled: true, keywords: ["DA&S07", "DA&S08", "DA&S06", "DA&S11", "DA&S10", "DA&S111", "DA&S14", "DA&S25", "DA&S12", "DA&S28", "DA&S29", "DA&S17", "DA&S18", "DA&S34", "DA&S35", "DA&S13", "Confirm-DA"], similar: ["Confirm-DA"], channels: ["facebook", "line"], context_in: "*", context_out: "contactadmin", queue_name: "CDS - Default", opportunity_name: "Confirm-DA", auto_reply: "ไม่ตอบกลับ", expanded: true },
+  { id: "BOT-002", name: "Welcome Message", enabled: true, keywords: ["สวัสดี", "hello", "hi", "ต้องการสอบถาม"], similar: [], channels: ["facebook", "line", "instagram"], context_in: "*", context_out: "welcome", queue_name: "CDS - Default", opportunity_name: "", auto_reply: "สวัสดีค่ะ ยินดีต้อนรับสู่ Central Chat & Shop 🌟", expanded: false },
+  { id: "BOT-003", name: "บทสนทนาที่บอทตอบไม่ได้", enabled: true, keywords: [], similar: [], channels: ["facebook", "line", "instagram"], context_in: "*", context_out: "fallback", queue_name: "CDS - Default", opportunity_name: "", auto_reply: "", expanded: false }
+];
+
+const LOCAL_STATE_ORDERS = [
+  { id: "ORD-5001", customer: "บจก. คอนสตรัคชั่นพลัส", items: "กระเบื้องปูพื้นแกรนิตโต้ 200 ตร.ม.", amount: 125000, status: "paid", payment_method: "โอนธนาคาร", pos_ticket: "POS-9981", created_at: "2026-06-15", updated_at: "2026-06-16" },
+  { id: "ORD-5002", customer: "หจก. เมืองทองวัสดุก่อสร้าง", items: "ชุดเครื่องมือช่างอุตสาหกรรม", amount: 48000, status: "pending-payment", payment_method: "บัตรเครดิต", pos_ticket: "", created_at: "2026-06-17", updated_at: "2026-06-17" },
+  { id: "ORD-5003", customer: "โครงการแกรนด์อเวนิว", items: "สีทาภายนอก 100 ถัง + น้ำยารองพื้น", amount: 345000, status: "draft", payment_method: "", pos_ticket: "", created_at: "2026-06-18", updated_at: "2026-06-18" },
+  { id: "ORD-5004", customer: "บมจ. อนันตากลุ๊ป", items: "ท่อ PVC ขนาด 4 นิ้ว 500 ท่อ + ข้อต่อ", amount: 670000, status: "printed", payment_method: "เครดิต 30 วัน", pos_ticket: "POS-9975", created_at: "2026-06-12", updated_at: "2026-06-18" },
+  { id: "ORD-5005", customer: "โครงการพาสิโอเรสซิเดนซ์", items: "ชุดสุขภัณฑ์สแกนดิเนเวียน 20 ชุด", amount: 180000, status: "void", payment_method: "โอนธนาคาร", pos_ticket: "", created_at: "2026-06-10", updated_at: "2026-06-14" },
+  { id: "ORD-5006", customer: "รับเหมาครบวงจร ช่างณรงค์", items: "โคมไฟสนาม Solar Cell 30 ชุด", amount: 75000, status: "cancelled", payment_method: "", pos_ticket: "", created_at: "2026-06-08", updated_at: "2026-06-09" }
+];
+
+// PDPA Helper: Mask sensitive data based on user role
+const maskPDPA = (value, userRole) => {
+  if (!value) return "—";
+  if (["role_a", "admin"].includes(userRole)) return value;
+  if (value.includes("@")) return value.replace(/(.{2})(.*)(@.*)/, "$1***$3");
+  return value.replace(/(.{3})(.*)(.{4})/, "$1-***-$3");
+};
+
 const MENU_TITLES = {
   home: { title: "หน้าหลัก / KPI", icon: "fa-solid fa-house", href: "#home" },
-  opportunity: { title: "รายการโอกาสขาย", icon: "fa-solid fa-folder-open", href: "#opportunity" },
-  call: { title: "การติดตามลูกค้า (Call)", icon: "fa-solid fa-phone-volume", href: "#call" },
+  opportunity: { title: "โอกาสขาย", icon: "fa-solid fa-folder-open", href: "#opportunity" },
+  call: { title: "ติดตามลูกค้า (Call)", icon: "fa-solid fa-phone-volume", href: "#call" },
+  case: { title: "Case Management", icon: "fa-solid fa-ticket", href: "#case" },
+  chat: { title: "Chat & Shop", icon: "fa-solid fa-comments", href: "#chat" },
+  order: { title: "Order Management", icon: "fa-solid fa-cart-shopping", href: "#order" },
   segment: { title: "เซกเมนต์ลูกค้า", icon: "fa-solid fa-users-viewfinder", href: "#segment" },
   monitor: { title: "มอนิเตอร์เจ้าหน้าที่", icon: "fa-solid fa-desktop", href: "#monitor" },
   dashboard: { title: "แดชบอร์ดสรุปยอด", icon: "fa-solid fa-chart-pie", href: "#dashboard" },
@@ -66,6 +131,35 @@ export default function Home() {
   const [agents, setAgents] = useState(LOCAL_STATE_AGENTS);
   const [notifications, setNotifications] = useState([]);
   const [customers, setCustomers] = useState(LOCAL_STATE_CUSTOMERS);
+
+  // Case Management states
+  const [cases, setCases] = useState(LOCAL_STATE_CASES);
+  const [caseSearch, setCaseSearch] = useState("");
+  const [caseStatusFilter, setCaseStatusFilter] = useState("all");
+  const [casePriorityFilter, setCasePriorityFilter] = useState("all");
+  const [selectedCase, setSelectedCase] = useState(null);
+  const [caseContentTab, setCaseContentTab] = useState("chatter");
+  const [chatterSubTab, setChatterSubTab] = useState("post");
+  const [chatterInput, setChatterInput] = useState("");
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
+  const [caseOverallOpen, setCaseOverallOpen] = useState(true);
+
+  // Chat & Shop states
+  const [chatSessions, setChatSessions] = useState(LOCAL_STATE_CHAT_SESSIONS);
+  const [activeChat, setActiveChat] = useState(null);
+  const [chatMessageInput, setChatMessageInput] = useState("");
+  const [chatFilter, setChatFilter] = useState("all");
+  const [chatSearchTerm, setChatSearchTerm] = useState("");
+  const [chatChannelFilter, setChatChannelFilter] = useState("all");
+  const [chatViewMode, setChatViewMode] = useState("list");
+
+  // Bot Config states
+  const [botRules, setBotRules] = useState(LOCAL_STATE_BOT_RULES);
+
+  // Order Management states
+  const [orders, setOrders] = useState(LOCAL_STATE_ORDERS);
+  const [orderSearch, setOrderSearch] = useState("");
+  const [orderStatusFilter, setOrderStatusFilter] = useState("all");
   
   // Toast notifications State
   const [toasts, setToasts] = useState([]);
@@ -727,7 +821,7 @@ export default function Home() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `STK_Report_Sales_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `CRM_TrackSales_Report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -945,7 +1039,7 @@ export default function Home() {
   const allowedMenus = permissions[user.role] || LOCAL_STATE_PERMISSIONS[user.role] || [];
 
   return (
-    <div id="app-root">
+    <div id="app-root" className="app-root">
       {/* Toast popup alerts */}
       <div className="toasts-wrapper" style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, display: "flex", flexDirection: "column", gap: "10px" }}>
         {toasts.map(t => (
@@ -965,12 +1059,42 @@ export default function Home() {
         ))}
       </div>
 
+      {/* === Salesforce Lightning Global Header === */}
+      <header className="sf-global-header">
+        <div className="sf-global-header__left">
+          <button className="sf-app-launcher" title="App Launcher">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="3" cy="3" r="2"/><circle cx="10" cy="3" r="2"/><circle cx="17" cy="3" r="2"/>
+              <circle cx="3" cy="10" r="2"/><circle cx="10" cy="10" r="2"/><circle cx="17" cy="10" r="2"/>
+              <circle cx="3" cy="17" r="2"/><circle cx="10" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+            </svg>
+          </button>
+          <span className="sf-app-name">CRM Track Sales</span>
+        </div>
+        <div className="sf-global-header__center">
+          <div className="sf-search-bar">
+            <i className="fa-solid fa-magnifying-glass sf-search-bar__icon"></i>
+            <input type="text" className="sf-search-bar__input" placeholder="Search CRM Track Sales" />
+          </div>
+        </div>
+        <div className="sf-global-header__right">
+          <button className="sf-global-action" title="Setup"><i className="fa-solid fa-gear"></i></button>
+          <button className="sf-global-action" title="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
+            <i className="fa-solid fa-bell"></i>
+            {notifications.filter(n => n.unread).length > 0 && <span className="sf-notif-badge">{notifications.filter(n => n.unread).length}</span>}
+          </button>
+          <div className="sf-avatar" title={user.name}>
+            {user.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+          </div>
+        </div>
+      </header>
+
       {/* Sidebar Navigation */}
       <aside id="sidebar" className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-header">
           <div className="logo-container">
-            <span className="logo-icon"><i className="fa-solid fa-chart-line"></i></span>
-            <span className="logo-text">STK <span className="logo-sub">System</span></span>
+            <span className="logo-icon"><i className="fa-solid fa-bolt"></i></span>
+            <span className="logo-text">CRM <span className="logo-sub">Track Sales</span></span>
           </div>
           <button id="sidebar-toggle" className="sidebar-toggle-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
             <i className={`fa-solid ${sidebarCollapsed ? "fa-chevron-right" : "fa-chevron-left"}`}></i>
@@ -979,29 +1103,47 @@ export default function Home() {
         
         <nav className="sidebar-menu">
           <ul id="menu-list">
-            {allowedMenus.map(menuKey => {
-              const item = MENU_TITLES[menuKey];
-              if (!item) return null;
-              const isActive = activeTab === menuKey;
-              return (
-                <li key={menuKey}>
-                  <a href={item.href} className={`menu-item-link ${isActive ? "active" : ""}`} onClick={(e) => {
-                    e.preventDefault();
-                    setActiveTab(menuKey);
-                  }}>
-                    <i className={item.icon}></i>
-                    <span className="menu-text">{item.title}</span>
-                  </a>
-                </li>
-              );
-            })}
+            {(() => {
+              const sections = [
+                { label: "CRM", items: ["home", "opportunity", "call", "order", "segment"] },
+                { label: "CHAT & SHOP", items: ["chat"] },
+                { label: "CASE", items: ["case"] },
+                { label: "MONITORING", items: ["monitor", "dashboard", "report"] },
+                { label: "SETTINGS", items: ["management"] }
+              ];
+              return sections.map(section => {
+                const visibleItems = section.items.filter(k => allowedMenus.includes(k));
+                if (visibleItems.length === 0) return null;
+                return (
+                  <React.Fragment key={section.label}>
+                    {!sidebarCollapsed && <li className="sidebar-section-label">{section.label}</li>}
+                    {visibleItems.map(menuKey => {
+                      const item = MENU_TITLES[menuKey];
+                      if (!item) return null;
+                      const isActive = activeTab === menuKey;
+                      return (
+                        <li key={menuKey}>
+                          <a href={item.href} className={`menu-item-link ${isActive ? "active" : ""}`} onClick={(e) => {
+                            e.preventDefault();
+                            setActiveTab(menuKey);
+                          }}>
+                            <i className={item.icon}></i>
+                            <span className="menu-text">{item.title}</span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </React.Fragment>
+                );
+              });
+            })()}
           </ul>
         </nav>
         
         <div className="sidebar-footer">
           <div className="version-info">
-            <div className="ver-label">salestracking_web</div>
-            <div className="ver-num">v1.0.1 (Build 471)</div>
+            <div className="ver-label">crm_track_sales</div>
+            <div className="ver-num">v2.0.0 (Build 1)</div>
           </div>
         </div>
       </aside>
@@ -1169,6 +1311,838 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {/* VIEW: CASE MANAGEMENT — SRS v1.4 COMPLIANT */}
+          {activeTab === "case" && (
+            <div className="view-container">
+              {selectedCase ? (
+                /* === SALESFORCE CASE DETAIL — 3-Panel Layout === */
+                <div className={`sf-case-layout ${leftPanelCollapsed ? 'left-collapsed' : ''}`}>
+                  {/* LEFT PANEL — Case List */}
+                  <div className="sf-case-left-panel" style={{ position: 'relative' }}>
+                    <div className="panel-header">
+                      <div className="list-title">
+                        <span className="pin-icon"><i className="fa-solid fa-inbox"></i></span>
+                        All BU - New Email ▾
+                        <span style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
+                          <i className="fa-solid fa-thumbtack" style={{ color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}></i>
+                          <i className="fa-solid fa-arrow-up-right-from-square" style={{ color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}></i>
+                        </span>
+                      </div>
+                      <div className="list-meta">
+                        {cases.filter(c => caseStatusFilter === "all" || c.status === caseStatusFilter).length} items • Updated {new Date().toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <div className="list-search">
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search this list..." value={caseSearch} onChange={(e) => setCaseSearch(e.target.value)} />
+                      </div>
+                      <div className="list-col-header">
+                        <span>Case Record Type ↕</span>
+                        <span style={{ display: 'flex', gap: '4px' }}>
+                          <i className="fa-solid fa-table-list" style={{ cursor: 'pointer' }}></i>
+                          <i className="fa-solid fa-table-columns" style={{ cursor: 'pointer' }}></i>
+                        </span>
+                      </div>
+                    </div>
+                    <div className="case-list-items">
+                      {cases
+                        .filter(c => caseStatusFilter === "all" || c.status === caseStatusFilter)
+                        .filter(c => casePriorityFilter === "all" || c.priority.toLowerCase() === casePriorityFilter)
+                        .filter(c => !caseSearch || c.id.toLowerCase().includes(caseSearch.toLowerCase()) || c.subject.toLowerCase().includes(caseSearch.toLowerCase()) || c.contact_name.toLowerCase().includes(caseSearch.toLowerCase()) || (c.account_name && c.account_name.toLowerCase().includes(caseSearch.toLowerCase())))
+                        .map(c => (
+                          <div key={c.id} className={`case-list-item ${selectedCase && selectedCase.id === c.id ? 'active' : ''}`} onClick={() => { setSelectedCase(c); setCaseContentTab('chatter'); }}>
+                            <div className="item-type">{c.case_record_type || c.bu}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div className="item-number">{c.case_number || c.id}</div>
+                            </div>
+                            <div className="item-name">{c.account_name || c.contact_name}</div>
+                            <div className="item-subject">{c.subject}</div>
+                          </div>
+                        ))
+                      }
+                    </div>
+                    <button className="sf-left-collapse-btn" onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}>
+                      <i className={`fa-solid ${leftPanelCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`}></i>
+                    </button>
+                  </div>
+
+                  {/* CENTER PANEL — Case Detail */}
+                  <div className="sf-case-center">
+                    {/* Subtab Bar */}
+                    <div className="sf-subtab-bar">
+                      <button className="subtab-item active">
+                        <i className="fa-solid fa-file-lines"></i>
+                        {selectedCase.account_name || selectedCase.contact_name}
+                        <span className="subtab-close">✕</span>
+                      </button>
+                      <button className="subtab-item">
+                        <i className="fa-solid fa-ticket"></i>
+                        {selectedCase.case_number || selectedCase.id}
+                        <span style={{ color: 'var(--color-success)', marginLeft: '4px' }}>✓</span>
+                        <span className="subtab-close">✕</span>
+                      </button>
+                    </div>
+
+                    {/* Case Header */}
+                    <div className="sf-case-header">
+                      <div className="header-top">
+                        <div className="header-identity">
+                          <div className="case-icon"><i className="fa-solid fa-ticket"></i></div>
+                          <div>
+                            <div className="case-type-label">Case</div>
+                            <div className="case-account-name">{selectedCase.account_name || selectedCase.contact_name}</div>
+                          </div>
+                        </div>
+                        <div className="header-actions">
+                          <button className="sf-btn follow"><i className="fa-solid fa-plus" style={{ marginRight: '4px' }}></i> Follow</button>
+                          <button className="sf-btn">Edit</button>
+                          <button className="sf-btn">Change Record Type</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Highlight Panel */}
+                    <div className="sf-highlight-panel">
+                      <div className="highlight-field">
+                        <span className="field-label">Case Number</span>
+                        <span className="field-value">{selectedCase.case_number || selectedCase.id}</span>
+                      </div>
+                      <div className="highlight-field">
+                        <span className="field-label">Case Record Type</span>
+                        <span className="field-value">{selectedCase.case_record_type || selectedCase.bu}</span>
+                      </div>
+                      <div className="highlight-field">
+                        <span className="field-label">Priority</span>
+                        <span className="field-value">{selectedCase.priority}</span>
+                      </div>
+                      <div className="highlight-field">
+                        <span className="field-label">Subject</span>
+                        <span className="field-value subject">{selectedCase.subject}</span>
+                      </div>
+                    </div>
+
+                    {/* Content Tabs */}
+                    <div className="sf-content-tabs">
+                      {["chatter", "related", "child-cases", "mcom", "return-form", "sla"].map(tab => (
+                        <button key={tab} className={`tab-item ${caseContentTab === tab ? 'active' : ''}`} onClick={() => setCaseContentTab(tab)}>
+                          {tab === "chatter" ? "Chatter" : tab === "related" ? "Related" : tab === "child-cases" ? "Related Child Cases" : tab === "mcom" ? "MCOM" : tab === "return-form" ? "Return Form" : "SLA"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Content Body */}
+                    <div className="sf-content-body">
+                      {caseContentTab === "chatter" && (
+                        <div>
+                          {/* Post / Email subtabs */}
+                          <div className="sf-chatter-subtabs">
+                            <button className={chatterSubTab === "post" ? "active" : ""} onClick={() => setChatterSubTab("post")}>Post</button>
+                            <button className={chatterSubTab === "email" ? "active" : ""} onClick={() => setChatterSubTab("email")}>Email</button>
+                          </div>
+
+                          {/* Compose Box */}
+                          <div className="sf-chatter-compose">
+                            <input className="compose-input" type="text" placeholder="Share an update..." value={chatterInput} onChange={e => setChatterInput(e.target.value)} />
+                            <div className="compose-actions">
+                              <button className="share-btn" onClick={() => {
+                                if (chatterInput.trim()) {
+                                  const updated = { ...selectedCase, chatter_posts: [{ user: user.name, avatar: null, action: "Posted", timestamp: "Just now", details: { comment: chatterInput } }, ...(selectedCase.chatter_posts || [])] };
+                                  setSelectedCase(updated);
+                                  setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
+                                  setChatterInput("");
+                                  showToast("Chatter", "Update posted successfully", "success");
+                                }
+                              }}>Share</button>
+                            </div>
+                          </div>
+
+                          {/* Activity Feed */}
+                          <div className="sf-activity-header">
+                            <div className="activity-title">
+                              Most Recent Activity ▾
+                            </div>
+                            <div className="activity-controls">
+                              <input className="feed-search" type="text" placeholder="Search this feed..." />
+                              <button title="Filter"><i className="fa-solid fa-filter"></i></button>
+                              <button title="Refresh"><i className="fa-solid fa-rotate"></i></button>
+                            </div>
+                          </div>
+
+                          {/* Activity Items */}
+                          {(selectedCase.chatter_posts || []).map((post, idx) => (
+                            <div key={idx} className="sf-activity-item">
+                              <div className="activity-avatar">
+                                <i className="fa-solid fa-user"></i>
+                              </div>
+                              <div className="activity-body">
+                                <div className="activity-meta">
+                                  <span className="activity-user">{post.user}</span>
+                                  <span className="activity-time">{post.timestamp}</span>
+                                </div>
+                                <div className="activity-action">
+                                  <span className={`action-badge ${post.action.toLowerCase().includes('created') ? 'created' : post.action.toLowerCase().includes('updated') || post.action.toLowerCase().includes('changed') ? 'updated' : 'comment'}`}>
+                                    <i className={`fa-solid ${post.action.toLowerCase().includes('created') ? 'fa-plus-circle' : post.action.toLowerCase().includes('resolved') ? 'fa-check-circle' : 'fa-pen'}`}></i>
+                                    {post.action}
+                                  </span>
+                                </div>
+                                {post.details && (
+                                  <div className="activity-details">
+                                    {post.details.comment && <span className="detail-line">{post.details.comment}</span>}
+                                    {post.details.account_name && <span className="detail-line"><span className="detail-label">Account Name: </span><span className="detail-value">{post.details.account_name}</span></span>}
+                                    {post.details.case_number && <span className="detail-line"><span className="detail-label">Case Number: </span><span className="detail-value link">{post.details.case_number}</span></span>}
+                                    {post.details.case_record_type && <span className="detail-line"><span className="detail-label">Case Record Type: </span><span className="detail-value">{post.details.case_record_type}</span></span>}
+                                    {post.details.priority && <span className="detail-line"><span className="detail-label">Priority: </span><span className="detail-value">{post.details.priority}</span></span>}
+                                    {post.details.subject && <span className="detail-line"><span className="detail-label">Subject: </span><span className="detail-value">{post.details.subject}</span></span>}
+                                    {post.details.status && <span className="detail-line"><span className="detail-label">Status: </span><span className="detail-value">{post.details.status}</span></span>}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+
+                          {(!selectedCase.chatter_posts || selectedCase.chatter_posts.length === 0) && (
+                            <div className="sf-related-placeholder">
+                              <i className="fa-solid fa-comment-slash"></i>
+                              <h3>No activity yet</h3>
+                              <p>Share an update to start the conversation</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {caseContentTab === "related" && (
+                        <div className="sf-related-placeholder">
+                          <i className="fa-solid fa-link"></i>
+                          <h3>Related Records</h3>
+                          <p>Contact, Account, and related records will appear here</p>
+                        </div>
+                      )}
+
+                      {caseContentTab === "child-cases" && (
+                        <div>
+                          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>Related Child Cases</h3>
+                          {cases.filter(c => c.parent_case === selectedCase.id).length > 0 ? (
+                            <table className="agent-grid-table">
+                              <thead><tr><th>Case Number</th><th>Subject</th><th>Status</th><th>Priority</th></tr></thead>
+                              <tbody>
+                                {cases.filter(c => c.parent_case === selectedCase.id).map(c => (
+                                  <tr key={c.id} style={{ cursor: 'pointer' }} onClick={() => { setSelectedCase(c); setCaseContentTab('chatter'); }}>
+                                    <td><strong style={{ color: 'var(--color-primary)' }}>{c.case_number || c.id}</strong></td>
+                                    <td>{c.subject}</td>
+                                    <td><span className={`case-status-badge ${c.status}`}>{c.status.replace("-", " ")}</span></td>
+                                    <td><span className={`case-priority-badge ${c.priority.toLowerCase()}`}>{c.priority}</span></td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          ) : (
+                            <div className="sf-related-placeholder">
+                              <i className="fa-solid fa-sitemap"></i>
+                              <h3>No Child Cases</h3>
+                              <p>No related child cases found for this case</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {caseContentTab === "mcom" && (
+                        <div className="sf-related-placeholder">
+                          <i className="fa-solid fa-building"></i>
+                          <h3>MCOM</h3>
+                          <p>MCOM integration data will appear here</p>
+                        </div>
+                      )}
+
+                      {caseContentTab === "return-form" && (
+                        <div className="sf-related-placeholder">
+                          <i className="fa-solid fa-rotate-left"></i>
+                          <h3>Return Form</h3>
+                          <p>Return form details will appear here</p>
+                        </div>
+                      )}
+
+                      {caseContentTab === "sla" && (
+                        <div className="sf-related-placeholder">
+                          <i className="fa-solid fa-clock"></i>
+                          <h3>SLA Tracking</h3>
+                          <p>SLA milestones and compliance data will appear here</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* RIGHT PANEL — Case Sidebar */}
+                  <div className="sf-case-right-panel">
+                    <button className="ownership-btn" onClick={() => showToast('Ownership', 'You are now the owner of this case', 'success')}>
+                      Take Ownership
+                    </button>
+
+                    <div className="sidebar-field">
+                      <span className="sf-field-label">Chat/Contact Channel Name</span>
+                      <span className="sf-field-value">{selectedCase.chat_channel_name || "—"}</span>
+                    </div>
+                    <div className="sidebar-field">
+                      <span className="sf-field-label">Chat Status Flag</span>
+                      <span className="sf-field-value">{selectedCase.chat_status_flag || "—"}</span>
+                    </div>
+                    <div className="sidebar-field">
+                      <span className="sf-field-label">Chat Wait Minutes</span>
+                      <span className="sf-field-value">{(selectedCase.chat_wait_minutes || 0).toFixed(2)}</span>
+                    </div>
+
+                    {/* Case Overall Detail — Collapsible */}
+                    <div className={`sf-collapsible-section ${caseOverallOpen ? 'open' : ''}`}>
+                      <div className="section-header" onClick={() => setCaseOverallOpen(!caseOverallOpen)}>
+                        <i className="fa-solid fa-chevron-right"></i>
+                        Case Overall Detail
+                      </div>
+                      <div className="section-body">
+                        <div className="detail-row">
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Status</div>
+                            <div className="sf-field-value">
+                              <span className={`case-status-badge ${selectedCase.status}`}>{selectedCase.status.replace("-", " ")}</span>
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Parent Case</div>
+                            <div className="sf-field-value">
+                              {selectedCase.parent_case ? <span style={{ color: 'var(--color-primary)', cursor: 'pointer' }}>{selectedCase.parent_case}</span> : "—"}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="detail-row">
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Pending Status</div>
+                            <div className="sf-field-value">
+                              {selectedCase.pending_status || "—"}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Priority</div>
+                            <div className="sf-field-value">
+                              <span className={`case-priority-badge ${selectedCase.priority.toLowerCase()}`}>{selectedCase.priority}</span>
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="detail-row">
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Case Record Type</div>
+                            <div className="sf-field-value">
+                              {selectedCase.case_record_type || selectedCase.bu}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Case Origin</div>
+                            <div className="sf-field-value">
+                              <i className={`fa-brands ${selectedCase.case_origin === "Facebook" ? "fa-facebook" : selectedCase.case_origin === "LINE" ? "fa-line" : "fa-solid fa-envelope"}`} style={{ marginRight: '4px', fontSize: '12px' }}></i>
+                              {selectedCase.case_origin}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="detail-row">
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Owner</div>
+                            <div className="sf-field-value">
+                              {selectedCase.owner || "Unassigned"}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Type</div>
+                            <div className="sf-field-value">
+                              {selectedCase.type}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="detail-row">
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Case Reason</div>
+                            <div className="sf-field-value">
+                              {selectedCase.case_reason}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Root Cause</div>
+                            <div className="sf-field-value">
+                              {selectedCase.root_cause || "—"}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="detail-row">
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Contact Name</div>
+                            <div className="sf-field-value">
+                              {selectedCase.contact_name}
+                              <i className="fa-solid fa-pencil edit-icon"></i>
+                            </div>
+                          </div>
+                          <div className="detail-cell">
+                            <div className="sf-field-label">Created Date</div>
+                            <div className="sf-field-value">
+                              {new Date(selectedCase.created_at).toLocaleString("th-TH")}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* BOTTOM UTILITY BAR */}
+                  <div className="sf-utility-bar">
+                    <button className="utility-item" onClick={() => showToast('Auto Assign', 'Auto-assigning cases...', 'info')}><i className="fa-solid fa-robot"></i> Auto Assign</button>
+                    <button className="utility-item"><i className="fa-solid fa-clock-rotate-left"></i> History</button>
+                    <button className="utility-item"><i className="fa-solid fa-clock"></i> Recent Items</button>
+                    <button className="utility-item"><i className="fa-solid fa-headset"></i> Omni-Channel</button>
+                    <button className="utility-item"><i className="fa-solid fa-video"></i> Invite Form - Visual Remote Assistant</button>
+                    <button className="utility-item"><i className="fa-solid fa-tv"></i> Visual Remote Assistant - Video Dashboard</button>
+                  </div>
+                </div>
+              ) : (
+                /* === CASE LIST VIEW === */
+                <div>
+                  {/* Summary Stats */}
+                  <div className="stat-summary-row">
+                    <div className="stat-summary-card"><div className="stat-icon orange"><i className="fa-solid fa-inbox"></i></div><div className="stat-info"><span className="stat-value">{cases.filter(c => c.status === "new").length}</span><span className="stat-label">New</span></div></div>
+                    <div className="stat-summary-card"><div className="stat-icon red"><i className="fa-solid fa-fire"></i></div><div className="stat-info"><span className="stat-value">{cases.filter(c => ["open", "pending-customer", "pending-internal"].includes(c.status)).length}</span><span className="stat-label">Active</span></div></div>
+                    <div className="stat-summary-card"><div className="stat-icon green"><i className="fa-solid fa-check-circle"></i></div><div className="stat-info"><span className="stat-value">{cases.filter(c => c.status === "solved").length}</span><span className="stat-label">Solved</span></div></div>
+                    <div className="stat-summary-card"><div className="stat-icon grey"><i className="fa-solid fa-box-archive"></i></div><div className="stat-info"><span className="stat-value">{cases.filter(c => ["closed", "duplicate", "spam"].includes(c.status)).length}</span><span className="stat-label">Closed</span></div></div>
+                    <div className="stat-summary-card"><div className="stat-icon blue"><i className="fa-solid fa-chart-bar"></i></div><div className="stat-info"><span className="stat-value">{cases.length}</span><span className="stat-label">Total Cases</span></div></div>
+                  </div>
+
+                  {/* Filters */}
+                  <div className="monitor-header-actions" style={{ marginBottom: "20px" }}>
+                    <div className="search-ctrl-box">
+                      <i className="fa-solid fa-magnifying-glass"></i>
+                      <input type="text" placeholder="ค้นหา Case ID, หัวข้อ, ชื่อลูกค้า..." value={caseSearch} onChange={(e) => setCaseSearch(e.target.value)} />
+                    </div>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <select className="form-select-ctrl" style={{ width: "auto" }} value={caseStatusFilter} onChange={(e) => setCaseStatusFilter(e.target.value)}>
+                        <option value="all">All Status</option>
+                        <option value="new">🟡 New</option>
+                        <option value="open">🔴 Open</option>
+                        <option value="pending-customer">⏳ Pending Customer</option>
+                        <option value="pending-internal">🔵 Pending Internal</option>
+                        <option value="solved">🟢 Solved</option>
+                        <option value="closed">⚪ Closed</option>
+                        <option value="duplicate">Duplicate</option>
+                        <option value="spam">Spam</option>
+                      </select>
+                      <select className="form-select-ctrl" style={{ width: "auto" }} value={casePriorityFilter} onChange={(e) => setCasePriorityFilter(e.target.value)}>
+                        <option value="all">All Priority</option>
+                        <option value="critical">🔴 Critical</option>
+                        <option value="high">🟠 High</option>
+                        <option value="medium">🔵 Medium</option>
+                        <option value="low">⚪ Low</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Case Table */}
+                  <table className="agent-grid-table">
+                    <thead>
+                      <tr>
+                        <th>Case ID</th>
+                        <th>หัวข้อ</th>
+                        <th>ลูกค้า</th>
+                        <th>ช่องทาง</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Owner</th>
+                        <th>Created</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cases
+                        .filter(c => caseStatusFilter === "all" || c.status === caseStatusFilter)
+                        .filter(c => casePriorityFilter === "all" || c.priority.toLowerCase() === casePriorityFilter)
+                        .filter(c => !caseSearch || c.id.toLowerCase().includes(caseSearch.toLowerCase()) || c.subject.toLowerCase().includes(caseSearch.toLowerCase()) || c.contact_name.toLowerCase().includes(caseSearch.toLowerCase()))
+                        .map(c => (
+                          <tr key={c.id} style={{ cursor: "pointer" }} onClick={() => setSelectedCase(c)}>
+                            <td><strong style={{ color: "var(--color-primary)" }}>{c.id}</strong></td>
+                            <td>
+                              {c.subject}
+                              {c.is_vip && <span className="vip-flag" style={{ marginLeft: "6px" }}><i className="fa-solid fa-crown"></i> VIP</span>}
+                            </td>
+                            <td>{c.contact_name}</td>
+                            <td><i className={`fa-brands ${c.case_origin === "Facebook" ? "fa-facebook" : c.case_origin === "LINE" ? "fa-line" : "fa-solid fa-envelope"}`} style={{ marginRight: "4px" }}></i>{c.case_origin}</td>
+                            <td><span className={`case-priority-badge ${c.priority.toLowerCase()}`}>{c.priority}</span></td>
+                            <td><span className={`case-status-badge ${c.status}`}>{c.status.replace("-", " ")}</span></td>
+                            <td>{c.owner || <span style={{ color: "var(--text-muted)" }}>Unassigned</span>}</td>
+                            <td style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{new Date(c.created_at).toLocaleDateString("th-TH")}</td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* VIEW: CHAT & SHOP — Live Chat Console */}
+          {activeTab === "chat" && (
+            <div className="chat-view-wrapper">
+              {/* Open Conversation Chips */}
+              <div className="chat-chips-bar">
+                {chatSessions.filter(s => s.status === "active").map(s => (
+                  <div key={s.id} className={`chat-chip ${activeChat && activeChat.id === s.id ? 'active' : ''}`} onClick={() => { setActiveChat(s); setChatViewMode('chat'); }}>
+                    <span className={`chip-channel-icon ${s.channel}`}>
+                      <i className={`fa-brands ${s.channel === 'line' ? 'fa-line' : s.channel === 'facebook' ? 'fa-facebook-f' : 'fa-instagram'}`}></i>
+                    </span>
+                    {s.customer_name}
+                    <span className="chip-close" onClick={e => { e.stopPropagation(); }}>×</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Channel Filter + View Toggle */}
+              <div className="chat-top-controls">
+                <div className="channel-filter-group">
+                  <span className="filter-label">Channel:</span>
+                  {[{ key: "all", label: "All", icon: "fa-solid fa-globe" }, { key: "line", label: "LINE", icon: "fa-brands fa-line" }, { key: "facebook", label: "Facebook", icon: "fa-brands fa-facebook-f" }, { key: "instagram", label: "Instagram", icon: "fa-brands fa-instagram" }].map(ch => (
+                    <button key={ch.key} className={`channel-filter-btn ${chatChannelFilter === ch.key ? 'active' : ''}`} onClick={() => setChatChannelFilter(ch.key)}>
+                      <i className={ch.icon}></i> {ch.label}
+                      <span className="channel-count">{ch.key === "all" ? chatSessions.length : chatSessions.filter(s => s.channel === ch.key).length}</span>
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div className="chat-search" style={{ width: '200px' }}>
+                    <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '12px', color: 'var(--text-muted)' }}></i>
+                    <input type="text" placeholder="Search..." value={chatSearchTerm} onChange={e => setChatSearchTerm(e.target.value)} style={{ width: '100%', padding: '6px 10px 6px 30px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '12px' }} />
+                  </div>
+                  <div className="view-toggle-group">
+                    <button className={`view-toggle-btn ${chatViewMode === 'list' ? 'active' : ''}`} onClick={() => setChatViewMode('list')}><i className="fa-solid fa-table-list"></i> List</button>
+                    <button className={`view-toggle-btn ${chatViewMode === 'chat' ? 'active' : ''}`} onClick={() => setChatViewMode('chat')}><i className="fa-solid fa-comments"></i> Chat</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* LIST / TABLE VIEW */}
+              {chatViewMode === "list" && (
+                <div className="chat-table-view">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '40px' }}>Pin</th>
+                        <th>Ref No</th>
+                        <th>Status <span className="sort-icon">⇅</span></th>
+                        <th>Stage</th>
+                        <th>Customer</th>
+                        <th>Source <span className="sort-icon">⇅</span></th>
+                        <th>BU</th>
+                        <th>Last Contact <span className="sort-icon">⇅</span></th>
+                        <th>Subject</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {chatSessions
+                        .filter(s => chatChannelFilter === "all" || s.channel === chatChannelFilter)
+                        .filter(s => chatFilter === "all" || s.status === chatFilter)
+                        .filter(s => !chatSearchTerm || s.customer_name.toLowerCase().includes(chatSearchTerm.toLowerCase()) || s.account.toLowerCase().includes(chatSearchTerm.toLowerCase()))
+                        .map(s => (
+                          <tr key={s.id} className={activeChat && activeChat.id === s.id ? 'active' : ''} onClick={() => { setActiveChat(s); setChatViewMode('chat'); }}>
+                            <td><i className={`fa-regular fa-star pin-star`}></i></td>
+                            <td><strong style={{ color: 'var(--color-primary)' }}>{s.id}</strong></td>
+                            <td>
+                              <span className={`status-pill ${s.status}`}>
+                                {s.status === "active" ? "OPEN" : s.status === "waiting" ? "WAITING" : "CLOSED"}
+                                {s.status === "active" && <span className="open-time" style={{ marginLeft: '4px' }}>0 mins</span>}
+                              </span>
+                            </td>
+                            <td>New</td>
+                            <td>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 500 }}>{s.customer_name}</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{s.account}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`source-badge ${s.channel}`}>
+                                <i className={`fa-brands ${s.channel === 'line' ? 'fa-line' : s.channel === 'facebook' ? 'fa-facebook-f' : 'fa-instagram'}`}></i>
+                                {s.channel === "line" ? "Line" : s.channel === "facebook" ? "Facebook" : "Instagram"}
+                              </span>
+                            </td>
+                            <td>CDS</td>
+                            <td>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontSize: '12px' }}>{s.last_time}</span>
+                              </div>
+                            </td>
+                            <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.last_message}</td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* CHAT VIEW (existing 3-panel) */}
+              {chatViewMode === "chat" && (
+                <div className="chat-console-layout" style={{ flex: 1 }}>
+                  {/* LEFT: Chat List */}
+                  <div className="chat-list-panel">
+                    <div className="chat-list-header">
+                      <h3>
+                        <i className="fa-solid fa-comments"></i> Conversations
+                        <span className="chat-count-badge">{chatSessions.filter(s => s.unread > 0).length}</span>
+                      </h3>
+                      <div className="chat-filter-bar">
+                        {["all", "active", "waiting", "closed"].map(f => (
+                          <button key={f} className={chatFilter === f ? "active" : ""} onClick={() => setChatFilter(f)}>
+                            {f === "all" ? "All" : f === "active" ? "Active" : f === "waiting" ? "Waiting" : "Closed"}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="chat-search">
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search conversations..." value={chatSearchTerm} onChange={e => setChatSearchTerm(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="chat-list-items">
+                      {chatSessions
+                        .filter(s => chatFilter === "all" || s.status === chatFilter)
+                        .filter(s => chatChannelFilter === "all" || s.channel === chatChannelFilter)
+                        .filter(s => !chatSearchTerm || s.customer_name.toLowerCase().includes(chatSearchTerm.toLowerCase()) || s.account.toLowerCase().includes(chatSearchTerm.toLowerCase()))
+                        .map(s => (
+                          <div key={s.id} className={`chat-list-entry ${activeChat && activeChat.id === s.id ? 'active' : ''}`} onClick={() => setActiveChat(s)}>
+                            <div className="chat-avatar">
+                              {s.customer_name.charAt(0)}
+                              <span className={`channel-badge ${s.channel}`}>
+                                <i className={`fa-brands ${s.channel === 'line' ? 'fa-line' : s.channel === 'facebook' ? 'fa-facebook-f' : 'fa-instagram'}`}></i>
+                              </span>
+                            </div>
+                            <div className="chat-entry-info">
+                              <div className="chat-entry-top">
+                                <span className="chat-entry-name">{s.customer_name}</span>
+                                <span className="chat-entry-time">{s.last_time}</span>
+                              </div>
+                              <div className="chat-entry-preview">{s.last_message}</div>
+                              <div className="chat-entry-status">
+                                <span className={`status-dot ${s.status}`}></span>
+                                <span>{s.status === "active" ? "Active" : s.status === "waiting" ? "Waiting" : "Closed"}</span>
+                              </div>
+                            </div>
+                            {s.unread > 0 && <span className="unread-badge">{s.unread}</span>}
+                          </div>
+                        ))
+                      }
+                    </div>
+                  </div>
+
+                  {/* CENTER: Chat Window */}
+                  <div className="chat-window-panel">
+                    {activeChat ? (
+                      <>
+                        <div className="chat-window-header">
+                          <div className="chat-partner-info">
+                            <div className="partner-avatar"><i className="fa-solid fa-user"></i></div>
+                            <div>
+                              <div className="partner-name">{activeChat.customer_name}({activeChat.channel === "line" ? "Line" : activeChat.channel === "facebook" ? "Facebook" : "Instagram"})</div>
+                              <div className="partner-channel">{activeChat.account} • {activeChat.phone}</div>
+                            </div>
+                          </div>
+                          <div className="chat-header-actions">
+                            <button className="transfer-btn" onClick={() => showToast("Transfer", "Chat transfer initiated", "info")}><i className="fa-solid fa-share"></i> Transfer Chat</button>
+                            <button onClick={() => showToast("Refresh", "Chat refreshed", "info")}><i className="fa-solid fa-rotate"></i></button>
+                          </div>
+                        </div>
+
+                        <div className="chat-toolbar">
+                          <button className={`toolbar-btn ${activeChat.channel === 'line' ? 'channel-line' : activeChat.channel === 'facebook' ? 'channel-fb' : 'channel-ig'}`}>
+                            <i className={`fa-brands ${activeChat.channel === 'line' ? 'fa-line' : activeChat.channel === 'facebook' ? 'fa-facebook-f' : 'fa-instagram'}`}></i>
+                          </button>
+                          <button className="toolbar-btn" onClick={() => showToast("Close", "Chat will be closed", "warning")}><i className="fa-solid fa-xmark"></i></button>
+                          <div className="internal-toggle">
+                            <label className="switch-control" style={{ transform: 'scale(0.7)' }}><input type="checkbox" /><span className="switch-slider"></span></label>
+                            <span>Internal</span>
+                          </div>
+                          <button className="toolbar-btn"><i className="fa-solid fa-paperclip"></i> File</button>
+                          <select defaultValue="">
+                            <option value="">-- Auto Message --</option>
+                            <option value="greeting">สวัสดีค่ะ ยินดีให้บริการ</option>
+                            <option value="wait">กรุณารอสักครู่นะคะ</option>
+                            <option value="thanks">ขอบคุณที่ติดต่อมาค่ะ</option>
+                            <option value="transfer">ขอส่งต่อให้ทีมที่เกี่ยวข้องนะคะ</option>
+                          </select>
+                        </div>
+
+                        <div className="chat-messages-area">
+                          {activeChat.messages.map((msg, idx) => (
+                            <div key={idx} className={`chat-bubble-wrapper ${msg.sender}`}>
+                              <div className="chat-bubble">{msg.text}</div>
+                              <div className="chat-bubble-meta">{msg.sender === "bot" ? "Bot" : msg.sender === "agent" ? "Agent" : msg.sender === "system" ? "System" : activeChat.customer_name} • {msg.time}</div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="chat-input-area">
+                          <textarea placeholder="Chat with customer..." value={chatMessageInput} onChange={e => setChatMessageInput(e.target.value)} onKeyDown={e => {
+                            if (e.key === 'Enter' && !e.shiftKey && chatMessageInput.trim()) {
+                              e.preventDefault();
+                              const newMsg = { sender: "agent", text: chatMessageInput, time: new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) };
+                              const updated = { ...activeChat, messages: [...activeChat.messages, newMsg], last_message: chatMessageInput, last_time: "Just now" };
+                              setActiveChat(updated);
+                              setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
+                              setChatMessageInput("");
+                            }
+                          }} />
+                          <button className="send-btn" onClick={() => {
+                            if (chatMessageInput.trim()) {
+                              const newMsg = { sender: "agent", text: chatMessageInput, time: new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) };
+                              const updated = { ...activeChat, messages: [...activeChat.messages, newMsg], last_message: chatMessageInput, last_time: "Just now" };
+                              setActiveChat(updated);
+                              setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
+                              setChatMessageInput("");
+                            }
+                          }}>Send</button>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: '12px', color: 'var(--text-muted)' }}>
+                        <i className="fa-solid fa-comments" style={{ fontSize: '48px' }}></i>
+                        <h3 style={{ color: 'var(--text-secondary)' }}>Select a conversation</h3>
+                        <p style={{ fontSize: '13px' }}>Choose a chat from the left panel to start</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT: Customer Detail */}
+                  <div className="chat-customer-panel">
+                    {activeChat ? (
+                      <>
+                        <div className="customer-header">
+                          <div className="customer-avatar-lg">{activeChat.customer_name.charAt(0)}</div>
+                          <h3>{activeChat.customer_name}</h3>
+                          <div className="customer-channel">
+                            <i className={`fa-brands ${activeChat.channel === 'line' ? 'fa-line' : activeChat.channel === 'facebook' ? 'fa-facebook-f' : 'fa-instagram'}`} style={{ marginRight: '4px' }}></i>
+                            {activeChat.channel === "line" ? "LINE" : activeChat.channel === "facebook" ? "Facebook" : "Instagram"}
+                          </div>
+                        </div>
+                        <div className="customer-section">
+                          <h4><i className="fa-solid fa-user"></i> Contact Info</h4>
+                          <div className="detail-item"><span className="label">Account</span><span className="value">{activeChat.account}</span></div>
+                          <div className="detail-item"><span className="label">Phone</span><span className="value">{activeChat.phone}</span></div>
+                          <div className="detail-item"><span className="label">Channel</span><span className="value">{activeChat.channel === "line" ? "LINE" : activeChat.channel === "facebook" ? "Facebook" : "Instagram"}</span></div>
+                          <div className="detail-item"><span className="label">Status</span><span className="value">{activeChat.status}</span></div>
+                        </div>
+                        {activeChat.opportunity_id && (
+                          <div className="customer-section">
+                            <h4><i className="fa-solid fa-folder-open"></i> Opportunity</h4>
+                            <div className="detail-item"><span className="label">ID</span><span className="value link">{activeChat.opportunity_id}</span></div>
+                            <div className="detail-item"><span className="label">Record Type</span><span className="value">CDS</span></div>
+                            <div className="detail-item"><span className="label">Business Unit</span><span className="value">CDS</span></div>
+                          </div>
+                        )}
+                        {activeChat.case_id && (
+                          <div className="customer-section">
+                            <h4><i className="fa-solid fa-ticket"></i> Related Case</h4>
+                            <div className="detail-item"><span className="label">Case ID</span><span className="value link">{activeChat.case_id}</span></div>
+                            <div className="detail-item"><span className="label">Record Type</span><span className="value">CDS</span></div>
+                          </div>
+                        )}
+                        <div className="customer-section">
+                          <h4><i className="fa-solid fa-clock-rotate-left"></i> Chat Stats</h4>
+                          <div className="detail-item"><span className="label">Messages</span><span className="value">{activeChat.messages.length}</span></div>
+                          <div className="detail-item"><span className="label">Started</span><span className="value">{activeChat.messages[0]?.time || "—"}</span></div>
+                          <div className="detail-item"><span className="label">Last Activity</span><span className="value">{activeChat.last_time}</span></div>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', flexDirection: 'column', gap: '8px' }}>
+                        <i className="fa-solid fa-user-circle" style={{ fontSize: '40px' }}></i>
+                        <p style={{ fontSize: '12px' }}>Customer details</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Utility Bar */}
+              <div className="sf-utility-bar" style={{ flexShrink: 0 }}>
+                <button className="utility-item" onClick={() => showToast('Auto Assign', 'Auto-assigning chats...', 'info')}><i className="fa-solid fa-robot"></i> Auto Assignment</button>
+                <button className="utility-item"><i className="fa-solid fa-rotate"></i> AutoRefresh_Listview</button>
+                <button className="utility-item"><i className="fa-solid fa-headset"></i> DA Status and Current Capacity</button>
+              </div>
+            </div>
+          )}
+
+          {/* VIEW: ORDER MANAGEMENT */}
+          {activeTab === "order" && (
+            <div className="view-container">
+              {/* Summary Stats */}
+              <div className="stat-summary-row">
+                <div className="stat-summary-card"><div className="stat-icon grey"><i className="fa-solid fa-file-lines"></i></div><div className="stat-info"><span className="stat-value">{orders.filter(o => o.status === "draft").length}</span><span className="stat-label">Draft</span></div></div>
+                <div className="stat-summary-card"><div className="stat-icon orange"><i className="fa-solid fa-clock"></i></div><div className="stat-info"><span className="stat-value">{orders.filter(o => o.status === "pending-payment").length}</span><span className="stat-label">Pending Payment</span></div></div>
+                <div className="stat-summary-card"><div className="stat-icon green"><i className="fa-solid fa-check-double"></i></div><div className="stat-info"><span className="stat-value">{orders.filter(o => ["paid", "printed"].includes(o.status)).length}</span><span className="stat-label">Paid / Printed</span></div></div>
+                <div className="stat-summary-card"><div className="stat-icon blue"><i className="fa-solid fa-baht-sign"></i></div><div className="stat-info"><span className="stat-value">฿{orders.filter(o => ["paid", "printed"].includes(o.status)).reduce((s, o) => s + o.amount, 0).toLocaleString()}</span><span className="stat-label">Revenue</span></div></div>
+              </div>
+
+              {/* Filters */}
+              <div className="monitor-header-actions" style={{ marginBottom: "20px" }}>
+                <div className="search-ctrl-box">
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" placeholder="ค้นหา Order ID, ลูกค้า, สินค้า..." value={orderSearch} onChange={(e) => setOrderSearch(e.target.value)} />
+                </div>
+                <select className="form-select-ctrl" style={{ width: "auto" }} value={orderStatusFilter} onChange={(e) => setOrderStatusFilter(e.target.value)}>
+                  <option value="all">All Status</option>
+                  <option value="draft">Draft</option>
+                  <option value="pending-payment">Pending Payment</option>
+                  <option value="paid">Paid</option>
+                  <option value="printed">Printed</option>
+                  <option value="void">Void</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="expired">Expired</option>
+                </select>
+              </div>
+
+              {/* Order Table */}
+              <table className="agent-grid-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>ลูกค้า</th>
+                    <th>รายการสินค้า</th>
+                    <th>มูลค่า (฿)</th>
+                    <th>Status</th>
+                    <th>ช่องทางชำระ</th>
+                    <th>POS Ticket</th>
+                    <th>วันที่สร้าง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders
+                    .filter(o => orderStatusFilter === "all" || o.status === orderStatusFilter)
+                    .filter(o => !orderSearch || o.id.toLowerCase().includes(orderSearch.toLowerCase()) || o.customer.toLowerCase().includes(orderSearch.toLowerCase()) || o.items.toLowerCase().includes(orderSearch.toLowerCase()))
+                    .map(o => (
+                      <tr key={o.id}>
+                        <td><strong style={{ color: "var(--color-primary)" }}>{o.id}</strong></td>
+                        <td>{o.customer}</td>
+                        <td style={{ maxWidth: "300px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.items}</td>
+                        <td style={{ fontWeight: 700, fontFamily: "var(--font-heading)" }}>฿{o.amount.toLocaleString()}</td>
+                        <td><span className={`order-status-badge ${o.status}`}>{o.status.replace("-", " ")}</span></td>
+                        <td>{o.payment_method || <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
+                        <td>{o.pos_ticket || <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
+                        <td style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{o.created_at}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          )}
+
 
           {/* VIEW: OPPORTUNITY (KANBAN) */}
           {activeTab === "opportunity" && (
@@ -1770,6 +2744,12 @@ export default function Home() {
                 >
                   Salesforce / Zwiz API
                 </button>
+                <button 
+                  className={`sub-tab-pill ${managementSubTab === "botconfig" ? "active" : ""}`}
+                  onClick={() => setManagementSubTab("botconfig")}
+                >
+                  Bot Config
+                </button>
               </div>
 
               {managementSubTab === "roles" && (
@@ -2119,6 +3099,89 @@ export default function Home() {
                   </div>
                 </div>
               )}
+
+              {managementSubTab === "botconfig" && (
+                <div className="bot-config-wrapper">
+                  <div className="bot-config-header">
+                    <h2><i className="fa-solid fa-robot" style={{ color: 'var(--color-primary)' }}></i> Zwiz Bot Configuration</h2>
+                    <button className="add-rule-btn" onClick={() => showToast('Bot Config', 'New rule template added', 'success')}>
+                      <i className="fa-solid fa-plus"></i> เพิ่มบทสนทนา
+                    </button>
+                  </div>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>กำหนดค่า Keyword Triggers, Context Mapping, และ Auto-Reply สำหรับ Zwiz Chatbot</p>
+
+                  {botRules.map(rule => (
+                    <div key={rule.id} className="bot-rule-card">
+                      <div className="rule-header" onClick={() => setBotRules(prev => prev.map(r => r.id === rule.id ? { ...r, expanded: !r.expanded } : r))}>
+                        <div className="rule-title">
+                          <i className={`fa-solid fa-chevron-${rule.expanded ? 'down' : 'right'}`} style={{ fontSize: '12px', color: 'var(--text-muted)' }}></i>
+                          <span className={`on-badge ${rule.enabled ? 'active' : 'inactive'}`}>{rule.enabled ? 'ON' : 'OFF'}</span>
+                          {rule.name}
+                          <span style={{ display: 'flex', gap: '4px' }}>
+                            {rule.channels.includes('facebook') && <span className="channel-icon fb" style={{ width: '20px', height: '20px', fontSize: '9px' }}><i className="fa-brands fa-facebook-f"></i></span>}
+                            {rule.channels.includes('line') && <span className="channel-icon line" style={{ width: '20px', height: '20px', fontSize: '9px' }}><i className="fa-brands fa-line"></i></span>}
+                            {rule.channels.includes('instagram') && <span className="channel-icon ig" style={{ width: '20px', height: '20px', fontSize: '9px' }}><i className="fa-brands fa-instagram"></i></span>}
+                          </span>
+                        </div>
+                        <div className="rule-actions">
+                          <button title="Edit" onClick={e => { e.stopPropagation(); showToast('Edit', `Editing ${rule.name}`, 'info'); }}><i className="fa-solid fa-pencil"></i></button>
+                          <button title="Duplicate" onClick={e => { e.stopPropagation(); showToast('Duplicate', `Duplicated ${rule.name}`, 'success'); }}><i className="fa-solid fa-copy"></i></button>
+                          <button title="Delete" onClick={e => { e.stopPropagation(); showToast('Delete', `Rule ${rule.name} deleted`, 'danger'); setBotRules(prev => prev.filter(r => r.id !== rule.id)); }}><i className="fa-solid fa-trash"></i></button>
+                        </div>
+                      </div>
+                      {rule.expanded && (
+                        <div className="rule-body">
+                          {rule.keywords.length > 0 && (
+                            <div className="rule-section">
+                              <h5><i className="fa-solid fa-key" style={{ marginRight: '4px' }}></i> คีย์เวิร์ด ({rule.keywords.length})</h5>
+                              <div className="keyword-tags">
+                                {rule.keywords.map((kw, i) => <span key={i} className="keyword-tag">{kw}</span>)}
+                              </div>
+                            </div>
+                          )}
+                          {rule.similar.length > 0 && (
+                            <div className="rule-section">
+                              <h5><i className="fa-solid fa-equals" style={{ marginRight: '4px' }}></i> เหมือนกับ</h5>
+                              <div className="keyword-tags">
+                                {rule.similar.map((s, i) => <span key={i} className="keyword-tag" style={{ background: '#E8F5E9', borderColor: '#81C784', color: '#2E7D32' }}>{s}</span>)}
+                              </div>
+                            </div>
+                          )}
+                          <div className="rule-section">
+                            <h5><i className="fa-solid fa-diagram-project" style={{ marginRight: '4px' }}></i> Context Mapping</h5>
+                            <div className="context-grid">
+                              <div className="context-field">
+                                <div className="ctx-label">Context In</div>
+                                <div className="ctx-value">{rule.context_in}</div>
+                              </div>
+                              <div className="context-field">
+                                <div className="ctx-label">Context Out</div>
+                                <div className="ctx-value">{rule.context_out}</div>
+                              </div>
+                              <div className="context-field">
+                                <div className="ctx-label">Queue Name</div>
+                                <div className="ctx-value">{rule.queue_name}</div>
+                              </div>
+                              <div className="context-field">
+                                <div className="ctx-label">Opportunity Name</div>
+                                <div className="ctx-value">{rule.opportunity_name || '—'}</div>
+                              </div>
+                            </div>
+                          </div>
+                          {rule.auto_reply && (
+                            <div className="rule-section">
+                              <h5><i className="fa-solid fa-reply" style={{ marginRight: '4px' }}></i> คำตอบของแชทบอท</h5>
+                              <div style={{ padding: '10px', background: 'var(--bg-main)', borderRadius: '6px', border: '1px solid var(--border-color)', fontSize: '13px', color: 'var(--text-primary)' }}>
+                                {rule.auto_reply}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -2130,9 +3193,9 @@ export default function Home() {
         <div id="login-overlay" className="login-overlay active">
           <div className="login-card-container">
             <div className="login-brand">
-              <i className="fa-solid fa-chart-line brand-logo-icon"></i>
-              <h2>Sales Tracking System (STK)</h2>
-              <p>Thai Watsadu - โครงข่ายบันทึกยอดขายและการติดตามลูกค้า</p>
+              <i className="fa-solid fa-bolt brand-logo-icon"></i>
+              <h2>CRM Track Sales</h2>
+              <p>Central Department Store — ระบบบริหารลูกค้าและติดตามยอดขาย</p>
             </div>
             
             <div className="login-card">
