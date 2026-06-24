@@ -3,7 +3,7 @@ import { query } from '@/lib/db';
 
 // Helper to generate the next opportunity or case ID from PostgreSQL database
 async function getNextOpportunityId(prefix = 'OPP-') {
-    if (prefix === 'CASE-' || prefix === 'cs') {
+    if (prefix === 'CASE-' || prefix === 'cs' || prefix === 'ca') {
         const d = new Date();
         const bangkokDate = new Intl.DateTimeFormat('en-US', {
             timeZone: 'Asia/Bangkok',
@@ -16,7 +16,7 @@ async function getNextOpportunityId(prefix = 'OPP-') {
         const mm = bangkokDate.find(p => p.type === 'month').value;
         const dd = bangkokDate.find(p => p.type === 'day').value;
         const dateStr = `${yy}${mm}${dd}`;
-        const finalPrefix = 'cs';
+        const finalPrefix = 'ca';
         const pattern = `${finalPrefix}${dateStr}%`;
         
         const maxRes = await query(`SELECT id FROM opportunities WHERE id LIKE $1`, [pattern]);
@@ -94,7 +94,7 @@ export async function POST(request) {
                         });
                         resolvedOppId = newId;
                     } else if (actionName === 'CREATE_CASE') {
-                        const newId = await getNextOpportunityId('cs');
+                        const newId = await getNextOpportunityId('ca');
                         const title = params.subject || 'Case Inbound';
                         await createOpportunity({
                             id: newId,
