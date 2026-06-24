@@ -32,49 +32,49 @@ const LOCAL_STATE_OPPORTUNITIES = [
 ];
 
 const LOCAL_STATE_CUSTOMERS = [
-  { code: "CUST-801", name: "วิวัฒน์ เอนจิเนียริ่ง", segment: "Platinum Tier", province: "กรุงเทพฯ", last_order: "150,000 บาท", last_contact: "2026-05-18", status: "ปกติ" },
-  { code: "CUST-802", name: "ช่างพัฒน์ โครงหลังคาเหล็ก", segment: "SME Contractor", province: "นนทบุรี", last_order: "32,000 บาท", last_contact: "2026-05-19", status: "ติดตามด่วน" },
-  { code: "CUST-803", name: "คุณพรเพ็ญ บ้านสวยทิวลิป", segment: "Retail Walk-In", province: "ปทุมธานี", last_order: "8,500 บาท", last_contact: "2026-05-10", status: "ปกติ" },
-  { code: "CUST-804", name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", segment: "Platinum Tier", province: "ชลบุรี", last_order: "1,200,000 บาท", last_contact: "2026-05-15", status: "ปกติ" },
-  { code: "CUST-805", name: "รับเหมาครบวงจร ช่างณรงค์", segment: "VIP Builder", province: "สมุทรปราการ", last_order: "95,000 บาท", last_contact: "2026-05-20", status: "ปกติ" },
-  { code: "CUST-806", name: "บจก. เอสเตท พร็อพเพอร์ตี้", segment: "VIP Builder", province: "สมุทรสาคร", last_order: "420,000 บาท", last_contact: "2026-05-14", status: "ติดตามด่วน" }
+  { code: "cm26051801", name: "วิวัฒน์ เอนจิเนียริ่ง", segment: "Platinum Tier", province: "กรุงเทพฯ", last_order: "150,000 บาท", last_contact: "2026-05-18", status: "ปกติ" },
+  { code: "cm26051901", name: "ช่างพัฒน์ โครงหลังคาเหล็ก", segment: "SME Contractor", province: "นนทบุรี", last_order: "32,000 บาท", last_contact: "2026-05-19", status: "ติดตามด่วน" },
+  { code: "cm26051001", name: "คุณพรเพ็ญ บ้านสวยทิวลิป", segment: "Retail Walk-In", province: "ปทุมธานี", last_order: "8,500 บาท", last_contact: "2026-05-10", status: "ปกติ" },
+  { code: "cm26051501", name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", segment: "Platinum Tier", province: "ชลบุรี", last_order: "1,200,000 บาท", last_contact: "2026-05-15", status: "ปกติ" },
+  { code: "cm26052001", name: "รับเหมาครบวงจร ช่างณรงค์", segment: "VIP Builder", province: "สมุทรปราการ", last_order: "95,000 บาท", last_contact: "2026-05-20", status: "ปกติ" },
+  { code: "cm26051401", name: "บจก. เอสเตท พร็อพเพอร์ตี้", segment: "VIP Builder", province: "สมุทรสาคร", last_order: "420,000 บาท", last_contact: "2026-05-14", status: "ติดตามด่วน" }
 ];
 
 const LOCAL_STATE_CASES = [
-  { id: "CASE-1001", case_number: "18594038", account_name: "Sales103 Wellermoz", subject: "Re: ค้นหาตัวแทนจำหน่ายในพื้นที่ | อุปกรณ์อัจฉริยะสวมใส่ได้ (Smart Wearables) - ส่งตรงจากโรงงาน", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Medium", status: "new", pending_type: null, pending_status: "", case_origin: "Email", case_record_type: "CDS", bu: "CDS", owner: "CTO ADMIN", contact_name: "คุณสมศักดิ์ รักเรียน", contact_phone: "081-234-XXXX", contact_email: "somsak@example.com", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0.00, parent_case: null, created_at: "2026-06-18T09:00:00Z", updated_at: "2026-06-18T09:30:00Z", chatter_posts: [{ user: "CTO ADMIN", avatar: null, action: "Case created", timestamp: "10m ago", details: { account_name: "Sales103 Wellermoz", case_number: "18594038", case_record_type: "CDS", priority: "Medium", subject: "Re: ค้นหาตัวแทนจำหน่ายในพื้นที่ | อุปกรณ์อัจฉริยะสวมใส่ได้ (Smart Wearables) - ส่งตรงจากโรงงาน" } }] },
-  { id: "CASE-1002", case_number: "18594039", account_name: "Benji Corp", subject: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้าง", type: "Inquiry", case_reason: "Service", root_cause: null, priority: "Medium", status: "new", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "คุณพรเพ็ญ ดีงาม", contact_phone: "089-456-XXXX", contact_email: "pornpen@example.com", is_vip: true, chat_channel_name: "Line", chat_status_flag: "Active", chat_wait_minutes: 2.50, parent_case: null, created_at: "2026-06-18T10:00:00Z", updated_at: "2026-06-18T10:00:00Z", chatter_posts: [{ user: "System", avatar: null, action: "Case created", timestamp: "5m ago", details: { account_name: "Benji Corp", case_number: "18594039", case_record_type: "CDS", priority: "Medium", subject: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้าง" } }] },
-  { id: "CASE-1003", case_number: "18594040", account_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", subject: "ติดตามสถานะการจัดส่งคำสั่งซื้อ #ORD-8821", type: "Complaint", case_reason: "Delivery", root_cause: "Delivery", priority: "Critical", status: "pending-customer", pending_type: "Pending Customer", pending_status: "Pending Customer", case_origin: "Email", case_record_type: "CDS", bu: "CDS", owner: "นภา สุขดี", contact_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", contact_phone: "083-294-XXXX", contact_email: "charoen@example.com", is_vip: true, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: "CASE-1001", created_at: "2026-06-16T14:00:00Z", updated_at: "2026-06-17T16:00:00Z", chatter_posts: [{ user: "นภา สุขดี", avatar: null, action: "Status changed", timestamp: "1d ago", details: { status: "pending-customer" } }, { user: "System", avatar: null, action: "Case created", timestamp: "2d ago", details: { account_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", case_number: "18594040", case_record_type: "CDS", priority: "Critical", subject: "ติดตามสถานะการจัดส่งคำสั่งซื้อ #ORD-8821" } }] },
-  { id: "CASE-1004", case_number: "18594041", account_name: "คุณกิตติธัช", subject: "แจ้งปัญหาระบบชำระเงินออนไลน์ล้มเหลว", type: "Complaint", case_reason: "Service", root_cause: "Service", priority: "High", status: "pending-internal", pending_type: "Pending Internal", pending_status: "Pending Internal", case_origin: "Telephone", case_record_type: "CDS", bu: "CDS", owner: "สมเกียรติ ปัญญา", contact_name: "คุณกิตติธัช", contact_phone: "082-551-XXXX", contact_email: "kittithat@example.com", is_vip: false, chat_channel_name: "Telephone", chat_status_flag: "", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-17T08:00:00Z", updated_at: "2026-06-18T08:00:00Z", chatter_posts: [{ user: "สมเกียรติ ปัญญา", avatar: null, action: "Case updated", timestamp: "2h ago", details: { status: "pending-internal" } }] },
-  { id: "CASE-1005", case_number: "18594042", account_name: "คุณวิลาวัณย์", subject: "เคลมประกันสินค้า — เครื่องปรับอากาศไม่เย็น", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Medium", status: "solved", pending_type: null, pending_status: "", case_origin: "Facebook", case_record_type: "CDS", bu: "CDS", owner: "ธนาวุฒิ มีชัย", contact_name: "คุณวิลาวัณย์", contact_phone: "085-442-XXXX", contact_email: "wilawan@example.com", is_vip: false, chat_channel_name: "Facebook", chat_status_flag: "Closed", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-14T10:00:00Z", updated_at: "2026-06-18T07:00:00Z", chatter_posts: [{ user: "ธนาวุฒิ มีชัย", avatar: null, action: "Case resolved", timestamp: "3h ago", details: {} }] },
-  { id: "CASE-1006", case_number: "18594043", account_name: "รับเหมาครบวงจร ช่างณรงค์", subject: "ขอคืนสินค้า — สั่งซื้อผิดรุ่น", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Low", status: "closed", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: "พัชรา สิงห์โต", contact_name: "รับเหมาครบวงจร ช่างณรงค์", contact_phone: "088-123-XXXX", contact_email: "narongchai@example.com", is_vip: false, chat_channel_name: "Line", chat_status_flag: "Closed", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-10T09:00:00Z", updated_at: "2026-06-15T17:00:00Z", chatter_posts: [] },
-  { id: "CASE-1007", case_number: "18594044", account_name: "Unknown Bot", subject: "Spam — ข้อความโฆษณาจาก Bot", type: "Complaint", case_reason: "Service", root_cause: null, priority: "Low", status: "spam", pending_type: null, pending_status: "", case_origin: "Facebook", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "Unknown Bot", contact_phone: "", contact_email: "", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-18T06:00:00Z", updated_at: "2026-06-18T06:00:00Z", chatter_posts: [] },
-  { id: "CASE-1008", case_number: "18594045", account_name: "คุณสมศักดิ์ รักเรียน", subject: "สอบถามโปรโมชั่นกระเบื้อง — ซ้ำกับ CASE-1001", type: "Complaint", case_reason: "Product", root_cause: null, priority: "Low", status: "duplicate", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "คุณสมศักดิ์ รักเรียน", contact_phone: "081-234-XXXX", contact_email: "somsak@example.com", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: "CASE-1001", created_at: "2026-06-18T09:05:00Z", updated_at: "2026-06-18T09:05:00Z", chatter_posts: [] }
+  { id: "cs26061801", case_number: "cs26061801", account_name: "Sales103 Wellermoz", subject: "Re: ค้นหาตัวแทนจำหน่ายในพื้นที่ | อุปกรณ์อัจฉริยะสวมใส่ได้ (Smart Wearables) - ส่งตรงจากโรงงาน", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Medium", status: "new", pending_type: null, pending_status: "", case_origin: "Email", case_record_type: "CDS", bu: "CDS", owner: "CTO ADMIN", contact_name: "คุณสมศักดิ์ รักเรียน", contact_phone: "081-234-XXXX", contact_email: "somsak@example.com", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0.00, parent_case: null, created_at: "2026-06-18T09:00:00Z", updated_at: "2026-06-18T09:30:00Z", chatter_posts: [{ user: "CTO ADMIN", avatar: null, action: "Case created", timestamp: "10m ago", details: { account_name: "Sales103 Wellermoz", case_number: "cs26061801", case_record_type: "CDS", priority: "Medium", subject: "Re: ค้นหาตัวแทนจำหน่ายในพื้นที่ | อุปกรณ์อัจฉริยะสวมใส่ได้ (Smart Wearables) - ส่งตรงจากโรงงาน" } }] },
+  { id: "cs26061802", case_number: "cs26061802", account_name: "Benji Corp", subject: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้าง", type: "Inquiry", case_reason: "Service", root_cause: null, priority: "Medium", status: "new", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "คุณพรเพ็ญ ดีงาม", contact_phone: "089-456-XXXX", contact_email: "pornpen@example.com", is_vip: true, chat_channel_name: "Line", chat_status_flag: "Active", chat_wait_minutes: 2.50, parent_case: null, created_at: "2026-06-18T10:00:00Z", updated_at: "2026-06-18T10:00:00Z", chatter_posts: [{ user: "System", avatar: null, action: "Case created", timestamp: "5m ago", details: { account_name: "Benji Corp", case_number: "cs26061802", case_record_type: "CDS", priority: "Medium", subject: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้าง" } }] },
+  { id: "cs26061601", case_number: "cs26061601", account_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", subject: "ติดตามสถานะการจัดส่งคำสั่งซื้อ #or26061501", type: "Complaint", case_reason: "Delivery", root_cause: "Delivery", priority: "Critical", status: "pending-customer", pending_type: "Pending Customer", pending_status: "Pending Customer", case_origin: "Email", case_record_type: "CDS", bu: "CDS", owner: "นภา สุขดี", contact_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", contact_phone: "083-294-XXXX", contact_email: "charoen@example.com", is_vip: true, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: "cs26061801", created_at: "2026-06-16T14:00:00Z", updated_at: "2026-06-17T16:00:00Z", chatter_posts: [{ user: "นภา สุขดี", avatar: null, action: "Status changed", timestamp: "1d ago", details: { status: "pending-customer" } }, { user: "System", avatar: null, action: "Case created", timestamp: "2d ago", details: { account_name: "บจก. เจริญโภคภัณฑ์วิศวกรรม", case_number: "cs26061601", case_record_type: "CDS", priority: "Critical", subject: "ติดตามสถานะการจัดส่งคำสั่งซื้อ #or26061501" } }] },
+  { id: "cs26061701", case_number: "cs26061701", account_name: "คุณกิตติธัช", subject: "แจ้งปัญหาระบบชำระเงินออนไลน์ล้มเหลว", type: "Complaint", case_reason: "Service", root_cause: "Service", priority: "High", status: "pending-internal", pending_type: "Pending Internal", pending_status: "Pending Internal", case_origin: "Telephone", case_record_type: "CDS", bu: "CDS", owner: "สมเกียรติ ปัญญา", contact_name: "คุณกิตติธัช", contact_phone: "082-551-XXXX", contact_email: "kittithat@example.com", is_vip: false, chat_channel_name: "Telephone", chat_status_flag: "", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-17T08:00:00Z", updated_at: "2026-06-18T08:00:00Z", chatter_posts: [{ user: "สมเกียรติ ปัญญา", avatar: null, action: "Case updated", timestamp: "2h ago", details: { status: "pending-internal" } }] },
+  { id: "cs26061401", case_number: "cs26061401", account_name: "คุณวิลาวัณย์", subject: "เคลมประกันสินค้า — เครื่องปรับอากาศไม่เย็น", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Medium", status: "solved", pending_type: null, pending_status: "", case_origin: "Facebook", case_record_type: "CDS", bu: "CDS", owner: "ธนาวุฒิ มีชัย", contact_name: "คุณวิลาวัณย์", contact_phone: "085-442-XXXX", contact_email: "wilawan@example.com", is_vip: false, chat_channel_name: "Facebook", chat_status_flag: "Closed", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-14T10:00:00Z", updated_at: "2026-06-18T07:00:00Z", chatter_posts: [{ user: "ธนาวุฒิ มีชัย", avatar: null, action: "Case resolved", timestamp: "3h ago", details: {} }] },
+  { id: "cs26061001", case_number: "cs26061001", account_name: "รับเหมาครบวงจร ช่างณรงค์", subject: "ขอคืนสินค้า — สั่งซื้อผิดรุ่น", type: "Complaint", case_reason: "Product", root_cause: "Product Quality", priority: "Low", status: "closed", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: "พัชรา สิงห์โต", contact_name: "รับเหมาครบวงจร ช่างณรงค์", contact_phone: "088-123-XXXX", contact_email: "narongchai@example.com", is_vip: false, chat_channel_name: "Line", chat_status_flag: "Closed", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-10T09:00:00Z", updated_at: "2026-06-15T17:00:00Z", chatter_posts: [] },
+  { id: "cs26061803", case_number: "cs26061803", account_name: "Unknown Bot", subject: "Spam — ข้อความโฆษณาจาก Bot", type: "Complaint", case_reason: "Service", root_cause: null, priority: "Low", status: "spam", pending_type: null, pending_status: "", case_origin: "Facebook", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "Unknown Bot", contact_phone: "", contact_email: "", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: null, created_at: "2026-06-18T06:00:00Z", updated_at: "2026-06-18T06:00:00Z", chatter_posts: [] },
+  { id: "cs26061804", case_number: "cs26061804", account_name: "คุณสมศักดิ์ รักเรียน", subject: "สอบถามโปรโมชั่นกระเบื้อง — ซ้ำกับ cs26061801", type: "Complaint", case_reason: "Product", root_cause: null, priority: "Low", status: "duplicate", pending_type: null, pending_status: "", case_origin: "LINE", case_record_type: "CDS", bu: "CDS", owner: null, contact_name: "คุณสมศักดิ์ รักเรียน", contact_phone: "081-234-XXXX", contact_email: "somsak@example.com", is_vip: false, chat_channel_name: "", chat_status_flag: "", chat_wait_minutes: 0, parent_case: "cs26061801", created_at: "2026-06-18T09:05:00Z", updated_at: "2026-06-18T09:05:00Z", chatter_posts: [] }
 ];
 
 const LOCAL_STATE_CHAT_SESSIONS = [
-  { id: "CHAT-001", customer_name: "Benji", channel: "line", status: "active", unread: 2, last_message: "ติดต่อแอดมินค่ะ", last_time: "2m ago", account: "Benji Corp", phone: "081-234-XXXX", opportunity_id: "OPP-301", case_id: null, messages: [
+  { id: "ct26052601", customer_name: "Benji", channel: "line", status: "active", unread: 2, last_message: "ติดต่อแอดมินค่ะ", last_time: "2m ago", account: "Benji Corp", phone: "081-234-XXXX", opportunity_id: "OPP-301", case_id: null, messages: [
     { sender: "customer", text: "สวัสดีค่ะ สนใจสินค้า Smart Wearables", time: "26-May-26 15:45" },
     { sender: "bot", text: "(CENNI เป็น AI ChatBot ที่อาจให้ข้อมูลหรือคำตอบคลาดเคลื่อนได้ในบางครั้ง)", time: "26-May-26 15:45" },
     { sender: "bot", text: "สิ่งที่ฉันไม่สามารถทำได้:\n⛔ แจ้งรายละเอียดโปรโมชั่น คำสั่ง หรือจำนวนสินค้าคงเหลือ โดยลูกค้าสามารถสอบถามกับพนักงานในแอพที่รีไดยตรงได้ เพียงแจ้ง CENNI ว่าต้องการสอบถามพนักงานได้เลยค่ะ", time: "26-May-26 15:46" },
     { sender: "customer", text: "ติดต่อแอดมินค่ะ", time: "26-May-26 15:49" },
     { sender: "agent", text: "CENNI ขอส่งต่อการสนทนาของเราให้กับทีมบริการลูกค้า เพื่อช่วยเหลือคุณอย่างเหมาะสมนะ 🌟 โปรดรอสักครู่นะคะ", time: "26-May-26 15:49" }
   ] },
-  { id: "CHAT-002", customer_name: "คุณสมศักดิ์", channel: "facebook", status: "active", unread: 0, last_message: "ขอบคุณครับ รอติดตาม", last_time: "15m ago", account: "Sales103 Wellermoz", phone: "081-234-XXXX", opportunity_id: null, case_id: "CASE-1001", messages: [
+  { id: "ct26061801", customer_name: "คุณสมศักดิ์", channel: "facebook", status: "active", unread: 0, last_message: "ขอบคุณครับ รอติดตาม", last_time: "15m ago", account: "Sales103 Wellermoz", phone: "081-234-XXXX", opportunity_id: null, case_id: "cs26061801", messages: [
     { sender: "customer", text: "สอบถามเรื่อง Smart Wearables ที่สั่งไปครับ", time: "18-Jun-26 09:00" },
     { sender: "agent", text: "สวัสดีครับ คุณสมศักดิ์ ขอตรวจสอบข้อมูลให้สักครู่นะครับ", time: "18-Jun-26 09:05" },
     { sender: "agent", text: "ตรวจสอบแล้วครับ สินค้าอยู่ระหว่างจัดส่ง คาดว่าจะถึงภายใน 2-3 วันทำการ", time: "18-Jun-26 09:10" },
     { sender: "customer", text: "ขอบคุณครับ รอติดตาม", time: "18-Jun-26 09:12" }
   ] },
-  { id: "CHAT-003", customer_name: "คุณวิลาวัณย์", channel: "facebook", status: "waiting", unread: 1, last_message: "รบกวนช่วยเช็คสถานะเคลมให้หน่อยค่ะ", last_time: "30m ago", account: "คุณวิลาวัณย์", phone: "085-442-XXXX", opportunity_id: null, case_id: "CASE-1005", messages: [
+  { id: "ct26061802", customer_name: "คุณวิลาวัณย์", channel: "facebook", status: "waiting", unread: 1, last_message: "รบกวนช่วยเช็คสถานะเคลมให้หน่อยค่ะ", last_time: "30m ago", account: "คุณวิลาวัณย์", phone: "085-442-XXXX", opportunity_id: null, case_id: "cs26061401", messages: [
     { sender: "customer", text: "รบกวนช่วยเช็คสถานะเคลมให้หน่อยค่ะ", time: "18-Jun-26 08:30" }
   ] },
-  { id: "CHAT-004", customer_name: "คุณพรเพ็ญ", channel: "line", status: "active", unread: 0, last_message: "ได้เลยค่ะ ส่งใบเสนอราคาให้ทาง email นะคะ", last_time: "1h ago", account: "Benji Corp", phone: "089-456-XXXX", opportunity_id: "OPP-302", case_id: null, messages: [
+  { id: "ct26061803", customer_name: "คุณพรเพ็ญ", channel: "line", status: "active", unread: 0, last_message: "ได้เลยค่ะ ส่งใบเสนอราคาให้ทาง email นะคะ", last_time: "1h ago", account: "Benji Corp", phone: "089-456-XXXX", opportunity_id: "OPP-302", case_id: null, messages: [
     { sender: "customer", text: "สอบถามราคาเหล็กเส้นสำหรับงานก่อสร้างค่ะ", time: "18-Jun-26 08:00" },
     { sender: "agent", text: "สวัสดีค่ะ คุณพรเพ็ญ ยินดีให้บริการค่ะ ต้องการขนาดไหนคะ?", time: "18-Jun-26 08:05" },
     { sender: "customer", text: "ขนาด 12mm ประมาณ 200 เส้นค่ะ", time: "18-Jun-26 08:10" },
     { sender: "agent", text: "ได้เลยค่ะ ส่งใบเสนอราคาให้ทาง email นะคะ", time: "18-Jun-26 08:15" }
   ] },
-  { id: "CHAT-005", customer_name: "ช่างณรงค์", channel: "line", status: "closed", unread: 0, last_message: "ปิดการสนทนา", last_time: "2h ago", account: "รับเหมาครบวงจร ช่างณรงค์", phone: "088-123-XXXX", opportunity_id: null, case_id: "CASE-1006", messages: [
+  { id: "ct26061804", customer_name: "ช่างณรงค์", channel: "line", status: "closed", unread: 0, last_message: "ปิดการสนทนา", last_time: "2h ago", account: "รับเหมาครบวงจร ช่างณรงค์", phone: "088-123-XXXX", opportunity_id: null, case_id: "cs26061001", messages: [
     { sender: "system", text: "Chat closed by agent", time: "18-Jun-26 07:00" }
   ] }
 ];
@@ -86,12 +86,12 @@ const LOCAL_STATE_BOT_RULES = [
 ];
 
 const LOCAL_STATE_ORDERS = [
-  { id: "ORD-5001", customer: "บจก. คอนสตรัคชั่นพลัส", items: "กระเบื้องปูพื้นแกรนิตโต้ 200 ตร.ม.", amount: 125000, status: "paid", payment_method: "โอนธนาคาร", pos_ticket: "POS-9981", created_at: "2026-06-15", updated_at: "2026-06-16" },
-  { id: "ORD-5002", customer: "หจก. เมืองทองวัสดุก่อสร้าง", items: "ชุดเครื่องมือช่างอุตสาหกรรม", amount: 48000, status: "pending-payment", payment_method: "บัตรเครดิต", pos_ticket: "", created_at: "2026-06-17", updated_at: "2026-06-17" },
-  { id: "ORD-5003", customer: "โครงการแกรนด์อเวนิว", items: "สีทาภายนอก 100 ถัง + น้ำยารองพื้น", amount: 345000, status: "draft", payment_method: "", pos_ticket: "", created_at: "2026-06-18", updated_at: "2026-06-18" },
-  { id: "ORD-5004", customer: "บมจ. อนันตากลุ๊ป", items: "ท่อ PVC ขนาด 4 นิ้ว 500 ท่อ + ข้อต่อ", amount: 670000, status: "printed", payment_method: "เครดิต 30 วัน", pos_ticket: "POS-9975", created_at: "2026-06-12", updated_at: "2026-06-18" },
-  { id: "ORD-5005", customer: "โครงการพาสิโอเรสซิเดนซ์", items: "ชุดสุขภัณฑ์สแกนดิเนเวียน 20 ชุด", amount: 180000, status: "void", payment_method: "โอนธนาคาร", pos_ticket: "", created_at: "2026-06-10", updated_at: "2026-06-14" },
-  { id: "ORD-5006", customer: "รับเหมาครบวงจร ช่างณรงค์", items: "โคมไฟสนาม Solar Cell 30 ชุด", amount: 75000, status: "cancelled", payment_method: "", pos_ticket: "", created_at: "2026-06-08", updated_at: "2026-06-09" }
+  { id: "or26061501", customer: "บจก. คอนสตรัคชั่นพลัส", items: "กระเบื้องปูพื้นแกรนิตโต้ 200 ตร.ม.", amount: 125000, status: "paid", payment_method: "โอนธนาคาร", pos_ticket: "POS-9981", created_at: "2026-06-15", updated_at: "2026-06-16" },
+  { id: "or26061701", customer: "หจก. เมืองทองวัสดุก่อสร้าง", items: "ชุดเครื่องมือช่างอุตสาหกรรม", amount: 48000, status: "pending-payment", payment_method: "บัตรเครดิต", pos_ticket: "", created_at: "2026-06-17", updated_at: "2026-06-17" },
+  { id: "or26061801", customer: "โครงการแกรนด์อเวนิว", items: "สีทาภายนอก 100 ถัง + น้ำยารองพื้น", amount: 345000, status: "draft", payment_method: "", pos_ticket: "", created_at: "2026-06-18", updated_at: "2026-06-18" },
+  { id: "or26061201", customer: "บมจ. อนันตากลุ๊ป", items: "ท่อ PVC ขนาด 4 นิ้ว 500 ท่อ + ข้อต่อ", amount: 670000, status: "printed", payment_method: "เครดิต 30 วัน", pos_ticket: "POS-9975", created_at: "2026-06-12", updated_at: "2026-06-18" },
+  { id: "or26061001", customer: "โครงการพาสิโอเรสซิเดนซ์", items: "ชุดสุขภัณฑ์สแกนดิเนเวียน 20 ชุด", amount: 180000, status: "void", payment_method: "โอนธนาคาร", pos_ticket: "", created_at: "2026-06-10", updated_at: "2026-06-14" },
+  { id: "or26060801", customer: "รับเหมาครบวงจร ช่างณรงค์", items: "โคมไฟสนาม Solar Cell 30 ชุด", amount: 75000, status: "cancelled", payment_method: "", pos_ticket: "", created_at: "2026-06-08", updated_at: "2026-06-09" }
 ];
 
 // PDPA Helper: Mask sensitive data based on user role
@@ -125,6 +125,19 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("home");
   const [serverConnected, setServerConnected] = useState(false);
   const [serverMode, setServerMode] = useState("Mock In-Memory");
+
+  // Feature 1: Email Compose states
+  const [emailForm, setEmailForm] = useState({ to: '', cc: '', subject: '', body: '' });
+  const [emailSending, setEmailSending] = useState(false);
+
+  // Feature 2: File Upload states
+  const [chatFilePreview, setChatFilePreview] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Feature 4: Break Countdown states
+  const [breakCountdown, setBreakCountdown] = useState(0);
+  const [breakType, setBreakType] = useState(null);
+  const breakIntervalRef = useRef(null);
   
   const [permissions, setPermissions] = useState(LOCAL_STATE_PERMISSIONS);
   const [opportunities, setOpportunities] = useState(LOCAL_STATE_OPPORTUNITIES);
@@ -138,6 +151,16 @@ export default function Home() {
   const [caseStatusFilter, setCaseStatusFilter] = useState("all");
   const [casePriorityFilter, setCasePriorityFilter] = useState("all");
   const [selectedCase, setSelectedCase] = useState(null);
+  useEffect(() => {
+    if (selectedCase) {
+      setEmailForm({
+        to: selectedCase.contact_email || "",
+        cc: "",
+        subject: `Re: Case #${selectedCase.case_number} — ${selectedCase.subject}`,
+        body: ""
+      });
+    }
+  }, [selectedCase]);
   const [caseContentTab, setCaseContentTab] = useState("chatter");
   const [chatterSubTab, setChatterSubTab] = useState("post");
   const [chatterInput, setChatterInput] = useState("");
@@ -538,6 +561,41 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [showLogin, agents]);
 
+  // Feature 4: Break Time Countdown Timer
+  useEffect(() => {
+    if (breakCountdown > 0) {
+      breakIntervalRef.current = setInterval(() => {
+        setBreakCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(breakIntervalRef.current);
+            handleStatusChange("online");
+            showToast("หมดเวลาพัก", "สถานะของคุณถูกปรับเป็น ว่าง (Online) อัตโนมัติ", "info");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (breakIntervalRef.current) {
+        clearInterval(breakIntervalRef.current);
+      }
+    }
+    return () => {
+      if (breakIntervalRef.current) {
+        clearInterval(breakIntervalRef.current);
+      }
+    };
+  }, [breakCountdown]);
+
+  // Feature 5: Periodic tick to update elapsed time color coding
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const tickInterval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 15000); // tick every 15s to update color statuses
+    return () => clearInterval(tickInterval);
+  }, []);
+
   // Dashboard Chart.js Integration Hook
   useEffect(() => {
     if (activeTab !== "dashboard") return;
@@ -669,7 +727,32 @@ export default function Home() {
   };
 
   const handleStatusChange = async (newStatus) => {
+    // Check threshold for breaks
+    const isBreak = ["break10", "break60", "demand50"].includes(newStatus);
+    if (isBreak) {
+      const activeChatsCount = chatSessions.filter(s => s.assigned_to === user.name && s.status === "active").length;
+      if (activeChatsCount >= 5) {
+        showToast("ไม่สามารถพักได้", `ไม่สามารถเปลี่ยนสถานะเป็นพักได้ เนื่องจากมีงานอยู่ในมือ ${activeChatsCount} คิว (จำกัดไม่เกิน 4 คิว)`, "danger");
+        return;
+      }
+    }
+
     setUser(prev => ({ ...prev, status: newStatus }));
+    
+    // Manage countdown timer
+    if (newStatus === "break10") {
+      setBreakCountdown(600); // 10 minutes
+      setBreakType("break10");
+    } else if (newStatus === "break60") {
+      setBreakCountdown(3600); // 60 minutes
+      setBreakType("break60");
+    } else if (newStatus === "demand50") {
+      setBreakCountdown(3000); // 50 minutes
+      setBreakType("demand50");
+    } else {
+      setBreakCountdown(0);
+      setBreakType(null);
+    }
     
     try {
       await fetch("/api/agents/status", {
@@ -682,12 +765,226 @@ export default function Home() {
     }
     
     let label = "ว่าง (Online)";
-    if (newStatus === "break") label = "พักเบรก (Break)";
-    else if (newStatus === "lunch") label = "พักเที่ยง (Lunch)";
+    if (newStatus === "break10") label = "☕ พักเบรก 10 นาที (Break 10 Min)";
+    else if (newStatus === "break60") label = "🍽️ พักทานข้าว 60 นาที (Lunch 60 Min)";
+    else if (newStatus === "demand50") label = "📋 ธุระส่วนตัว 50 นาที (Demand 50 Min)";
     else if (newStatus === "offline") label = "ออฟไลน์ (Offline)";
     
     showToast("ปรับปรุงสถานะของคุณ", `แก้ไขสถานะแอปเป็น: ${label}`, "info");
     fetchAgents();
+  };
+
+  const getChatColorStatus = (session) => {
+    if (!session.assigned_to) return 'queued'; // 🟢 เขียว — New/Queued
+    if (session.status !== 'active' && session.status !== 'waiting') return 'closed'; // Offline/Closed
+    
+    if (session.status === 'active') return 'inprogress'; // 🔴 แดง — In Progress
+    
+    const lastAgentMsg = session.messages?.filter(m => m.sender === 'agent').pop();
+    if (!lastAgentMsg) return 'inprogress';
+    
+    let messageTime;
+    try {
+      const parts = lastAgentMsg.time.split(' ');
+      if (parts.length === 2) {
+        const dateParts = parts[0].split('-');
+        const timeParts = parts[1].split(':');
+        if (dateParts.length === 3 && timeParts.length === 2) {
+          const months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+          const year = parseInt("20" + dateParts[2]);
+          const month = months[dateParts[1]] || 0;
+          const day = parseInt(dateParts[0]);
+          const hour = parseInt(timeParts[0]);
+          const min = parseInt(timeParts[1]);
+          messageTime = new Date(year, month, day, hour, min).getTime();
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    
+    if (!messageTime) {
+      messageTime = new Date(lastAgentMsg.time).getTime();
+    }
+    
+    if (isNaN(messageTime)) return 'inprogress';
+    
+    const elapsed = (Date.now() - messageTime) / 60000; // in minutes
+    if (elapsed < 15) return 'pending-short'; // 🔵 ฟ้า — Pending < 15 min
+    if (elapsed <= 30) return 'pending-medium'; // 🟣 ม่วง — Pending 15-30 min
+    return 'pending-critical'; // ⚫ ดำ — Pending > 30 min
+  };
+
+  const getElapsedMinutes = (session) => {
+    const lastAgentMsg = session.messages?.filter(m => m.sender === 'agent').pop();
+    if (!lastAgentMsg) return 0;
+    
+    let messageTime;
+    try {
+      const parts = lastAgentMsg.time.split(' ');
+      if (parts.length === 2) {
+        const dateParts = parts[0].split('-');
+        const timeParts = parts[1].split(':');
+        if (dateParts.length === 3 && timeParts.length === 2) {
+          const months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+          const year = parseInt("20" + dateParts[2]);
+          const month = months[dateParts[1]] || 0;
+          const day = parseInt(dateParts[0]);
+          const hour = parseInt(timeParts[0]);
+          const min = parseInt(timeParts[1]);
+          messageTime = new Date(year, month, day, hour, min).getTime();
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    
+    if (!messageTime) {
+      messageTime = new Date(lastAgentMsg.time).getTime();
+    }
+    
+    if (isNaN(messageTime)) return 0;
+    
+    return Math.floor((Date.now() - messageTime) / 60000);
+  };
+
+  const getColorWeight = (colorStatus) => {
+    switch (colorStatus) {
+      case 'pending-critical': return 5;
+      case 'pending-medium': return 4;
+      case 'pending-short': return 3;
+      case 'inprogress': return 2;
+      case 'queued': return 1;
+      default: return 0;
+    }
+  };
+
+  const sortChatSessions = (a, b) => {
+    const pinA = a.pinned ? 1 : 0;
+    const pinB = b.pinned ? 1 : 0;
+    if (pinA !== pinB) {
+      return pinB - pinA;
+    }
+    const weightA = getColorWeight(getChatColorStatus(a));
+    const weightB = getColorWeight(getChatColorStatus(b));
+    if (weightA !== weightB) {
+      return weightB - weightA;
+    }
+    return b.id.localeCompare(a.id);
+  };
+
+  const togglePinChat = (sessionId, e) => {
+    if (e) e.stopPropagation();
+    setChatSessions(prev => prev.map(s => s.id === sessionId ? { ...s, pinned: !s.pinned } : s));
+    setActiveChat(prev => {
+      if (prev && prev.id === sessionId) {
+        return { ...prev, pinned: !prev.pinned };
+      }
+      return prev;
+    });
+    showToast("อัปเดตการปักหมุด", "ปรับปรุงสถานะปักหมุดการสนทนาเรียบร้อย", "success");
+  };
+
+
+  const handleSendEmail = async () => {
+    if (!emailForm.to || !emailForm.subject || !emailForm.body) {
+      showToast("ผิดพลาด", "กรุณากรอก To, Subject และ Body ให้ครบถ้วน", "danger");
+      return;
+    }
+
+    setEmailSending(true);
+    try {
+      const res = await fetch("/api/email/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: emailForm.to,
+          cc: emailForm.cc,
+          subject: emailForm.subject,
+          emailBody: emailForm.body
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        const updated = {
+          ...selectedCase,
+          chatter_posts: [
+            {
+              user: user.name,
+              avatar: null,
+              action: "Email sent",
+              timestamp: "Just now",
+              details: {
+                comment: `To: ${emailForm.to}\nCC: ${emailForm.cc || '—'}\nSubject: ${emailForm.subject}\n\n${emailForm.body}`,
+                is_email: true,
+                to: emailForm.to,
+                cc: emailForm.cc,
+                subject: emailForm.subject
+              }
+            },
+            ...(selectedCase.chatter_posts || [])
+          ]
+        };
+        setSelectedCase(updated);
+        setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
+        setEmailForm(prev => ({ ...prev, body: "" })); // Clear email body
+        showToast("ส่งอีเมลสำเร็จ", "ส่งอีเมลถึงลูกค้าเรียบร้อยแล้ว (จำลอง)", "success");
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      showToast("ผิดพลาด", err.message || "ไม่สามารถส่งอีเมลได้", "danger");
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setChatFilePreview({
+        name: file.name,
+        type: file.type,
+        data: reader.result
+      });
+      showToast("เตรียมส่งไฟล์", `เลือกไฟล์: ${file.name} แล้ว`, "info");
+    };
+    reader.onerror = (err) => {
+      console.error(err);
+      showToast("ข้อผิดพลาด", "ไม่สามารถอ่านไฟล์ได้", "danger");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = null;
+  };
+
+  const handleSendChatSessionMessage = () => {
+    if (!chatMessageInput.trim() && !chatFilePreview) return;
+
+    const timeStr = new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const msgText = chatMessageInput.trim() || `ส่งไฟล์: ${chatFilePreview.name}`;
+    
+    const newMsg = {
+      sender: "agent",
+      text: msgText,
+      time: timeStr,
+      ...(chatFilePreview ? { attachment: chatFilePreview } : {})
+    };
+
+    const updated = {
+      ...activeChat,
+      messages: [...activeChat.messages, newMsg],
+      last_message: msgText,
+      last_time: "Just now"
+    };
+
+    setActiveChat(updated);
+    setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
+    setChatMessageInput("");
+    setChatFilePreview(null);
   };
 
   // Drag-and-Drop Handlers
@@ -927,7 +1224,7 @@ export default function Home() {
       channel: { channel_type: "Facebook" }
     },
     CLOSE_CASE: {
-      action: { name: "CLOSE_CASE", params: { case_id: "CASE-308" } },
+      action: { name: "CLOSE_CASE", params: { case_id: "cs26061801" } },
       target: { social_id: "8689961871042617", display_name: "สมศักดิ์ รักเรียน" },
       channel: { channel_type: "Facebook" }
     },
@@ -1079,6 +1376,26 @@ export default function Home() {
         </div>
         <div className="sf-global-header__right">
           <button className="sf-global-action" title="Setup"><i className="fa-solid fa-gear"></i></button>
+          {["role_a", "admin"].includes(user.role) && (
+            <button
+              className="sf-global-action"
+              title="Watch List"
+              onClick={() => {
+                setActiveTab('home');
+                setTimeout(() => {
+                  document.querySelector('.watchlist-panel')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              style={{ position: 'relative' }}
+            >
+              <i className="fa-solid fa-triangle-exclamation" style={{ color: 'var(--color-danger)' }}></i>
+              {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length > 0 && (
+                <span className="sf-notif-badge" style={{ backgroundColor: 'var(--color-danger)' }}>
+                  {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length}
+                </span>
+              )}
+            </button>
+          )}
           <button className="sf-global-action" title="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
             <i className="fa-solid fa-bell"></i>
             {notifications.filter(n => n.unread).length > 0 && <span className="sf-notif-badge">{notifications.filter(n => n.unread).length}</span>}
@@ -1159,11 +1476,19 @@ export default function Home() {
           <div className="header-right">
             {/* Live Agent Status Select */}
             <div className="agent-status-panel">
-              <span className={`status-indicator-dot ${user.status}`}></span>
+              {breakCountdown > 0 && (
+                <div className={`break-countdown ${breakCountdown < 60 ? 'urgent' : ''}`}>
+                  <i className="fa-solid fa-clock"></i> {Math.floor(breakCountdown / 60)}:{(breakCountdown % 60).toString().padStart(2, '0')}
+                </div>
+              )}
+              <span className={`status-indicator-dot ${
+                ["break10", "break60", "demand50"].includes(user.status) ? "break" : user.status
+              }`}></span>
               <select id="agent-status-select" className="status-select" value={user.status} onChange={(e) => handleStatusChange(e.target.value)}>
                 <option value="online">ว่าง (Available)</option>
-                <option value="break">พักเบรก (Break)</option>
-                <option value="lunch">พักทานข้าว (Lunch)</option>
+                <option value="break10">☕ พักเบรก 10 นาที (Break 10 Min)</option>
+                <option value="break60">🍽️ พักทานข้าว 60 นาที (Lunch 60 Min)</option>
+                <option value="demand50">📋 ธุระส่วนตัว 50 นาที (Demand 50 Min)</option>
                 <option value="offline">ออฟไลน์ (Offline)</option>
               </select>
             </div>
@@ -1309,6 +1634,66 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Feature 3: Watch List Panel */}
+              {["role_a", "admin"].includes(user.role) && (
+                <div className="watchlist-panel" style={{ marginTop: "24px" }}>
+                  <h3>
+                    <i className="fa-solid fa-triangle-exclamation"></i> ลูกค้าเฝ้าระวัง (Watch List) — เคสวิกฤต/ความสำคัญสูง
+                    <span className="watchlist-badge" style={{ marginLeft: "10px" }}>
+                      {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length}
+                    </span>
+                  </h3>
+                  <div className="watchlist-table-wrap">
+                    <table className="watchlist-table">
+                      <thead>
+                        <tr>
+                          <th>Case ID</th>
+                          <th>หัวข้อ (Subject)</th>
+                          <th>ลูกค้า (Customer)</th>
+                          <th>ความสำคัญ (Priority)</th>
+                          <th>สถานะ (Status)</th>
+                          <th>ผู้รับผิดชอบ (Owner)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cases
+                          .filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved")
+                          .map(c => (
+                            <tr key={c.id} onClick={() => {
+                              setSelectedCase(c);
+                              setCaseContentTab('chatter');
+                              setActiveTab('case');
+                            }}>
+                              <td style={{ fontWeight: "700", color: "var(--color-primary)" }}>{c.case_number}</td>
+                              <td>{c.subject}</td>
+                              <td>{c.account_name || c.contact_name}</td>
+                              <td>
+                                <span className={`case-priority-badge ${c.priority.toLowerCase()}`}>
+                                  {c.priority}
+                                </span>
+                              </td>
+                              <td>
+                                <span className={`case-status-badge ${c.status.toLowerCase()}`}>
+                                  {c.status}
+                                </span>
+                              </td>
+                              <td>{c.owner || "Unassigned"}</td>
+                            </tr>
+                          ))
+                        }
+                        {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length === 0 && (
+                          <tr>
+                            <td colSpan="6" style={{ textAlign: "center", padding: "20px", color: "var(--text-muted)" }}>
+                              ไม่มีเคสเฝ้าระวังที่กำลังดำเนินการอยู่ 🎉
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1397,6 +1782,15 @@ export default function Home() {
                           <button className="sf-btn follow"><i className="fa-solid fa-plus" style={{ marginRight: '4px' }}></i> Follow</button>
                           <button className="sf-btn">Edit</button>
                           <button className="sf-btn">Change Record Type</button>
+                          <button
+                            className="sf-btn"
+                            onClick={() => {
+                              setCaseContentTab('chatter');
+                              setChatterSubTab('email');
+                            }}
+                          >
+                            <i className="fa-solid fa-envelope"></i> Email
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -1440,21 +1834,42 @@ export default function Home() {
                             <button className={chatterSubTab === "email" ? "active" : ""} onClick={() => setChatterSubTab("email")}>Email</button>
                           </div>
 
-                          {/* Compose Box */}
-                          <div className="sf-chatter-compose">
-                            <input className="compose-input" type="text" placeholder="Share an update..." value={chatterInput} onChange={e => setChatterInput(e.target.value)} />
-                            <div className="compose-actions">
-                              <button className="share-btn" onClick={() => {
-                                if (chatterInput.trim()) {
-                                  const updated = { ...selectedCase, chatter_posts: [{ user: user.name, avatar: null, action: "Posted", timestamp: "Just now", details: { comment: chatterInput } }, ...(selectedCase.chatter_posts || [])] };
-                                  setSelectedCase(updated);
-                                  setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
-                                  setChatterInput("");
-                                  showToast("Chatter", "Update posted successfully", "success");
-                                }
-                              }}>Share</button>
+                           {/* Compose Box */}
+                          {chatterSubTab === "post" ? (
+                            <div className="sf-chatter-compose">
+                              <input className="compose-input" type="text" placeholder="Share an update..." value={chatterInput} onChange={e => setChatterInput(e.target.value)} />
+                              <div className="compose-actions">
+                                <button className="share-btn" onClick={() => {
+                                  if (chatterInput.trim()) {
+                                    const updated = { ...selectedCase, chatter_posts: [{ user: user.name, avatar: null, action: "Posted", timestamp: "Just now", details: { comment: chatterInput } }, ...(selectedCase.chatter_posts || [])] };
+                                    setSelectedCase(updated);
+                                    setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
+                                    setChatterInput("");
+                                    showToast("Chatter", "Update posted successfully", "success");
+                                  }
+                                }}>Share</button>
+                              </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div className="email-compose-form">
+                              <div className="email-field-row">
+                                <label>To:</label>
+                                <input type="email" value={emailForm.to} onChange={e => setEmailForm(prev => ({ ...prev, to: e.target.value }))} placeholder="recipient@example.com" />
+                              </div>
+                              <div className="email-field-row">
+                                <label>CC:</label>
+                                <input type="email" value={emailForm.cc} onChange={e => setEmailForm(prev => ({ ...prev, cc: e.target.value }))} placeholder="cc@example.com" />
+                              </div>
+                              <div className="email-field-row">
+                                <label>Subject:</label>
+                                <input type="text" value={emailForm.subject} onChange={e => setEmailForm(prev => ({ ...prev, subject: e.target.value }))} placeholder="Subject" />
+                              </div>
+                              <textarea className="email-body-input" value={emailForm.body} onChange={e => setEmailForm(prev => ({ ...prev, body: e.target.value }))} placeholder="Write your email here..." />
+                              <button className="email-send-btn" onClick={handleSendEmail} disabled={emailSending}>
+                                {emailSending ? <><i className="fa-solid fa-spinner fa-spin"></i> Sending...</> : <><i className="fa-solid fa-paper-plane"></i> Send Email</>}
+                              </button>
+                            </div>
+                          )}
 
                           {/* Activity Feed */}
                           <div className="sf-activity-header">
@@ -1480,14 +1895,22 @@ export default function Home() {
                                   <span className="activity-time">{post.timestamp}</span>
                                 </div>
                                 <div className="activity-action">
-                                  <span className={`action-badge ${post.action.toLowerCase().includes('created') ? 'created' : post.action.toLowerCase().includes('updated') || post.action.toLowerCase().includes('changed') ? 'updated' : 'comment'}`}>
-                                    <i className={`fa-solid ${post.action.toLowerCase().includes('created') ? 'fa-plus-circle' : post.action.toLowerCase().includes('resolved') ? 'fa-check-circle' : 'fa-pen'}`}></i>
+                                  <span className={`action-badge ${
+                                    post.action.toLowerCase().includes('email') ? 'email' :
+                                    post.action.toLowerCase().includes('created') ? 'created' :
+                                    post.action.toLowerCase().includes('updated') || post.action.toLowerCase().includes('changed') ? 'updated' : 'comment'
+                                  }`}>
+                                    <i className={`fa-solid ${
+                                      post.action.toLowerCase().includes('email') ? 'fa-envelope' :
+                                      post.action.toLowerCase().includes('created') ? 'fa-plus-circle' :
+                                      post.action.toLowerCase().includes('resolved') ? 'fa-check-circle' : 'fa-pen'
+                                    }`}></i>
                                     {post.action}
                                   </span>
                                 </div>
                                 {post.details && (
                                   <div className="activity-details">
-                                    {post.details.comment && <span className="detail-line">{post.details.comment}</span>}
+                                    {post.details.comment && <span className="detail-line" style={{ whiteSpace: 'pre-wrap' }}>{post.details.comment}</span>}
                                     {post.details.account_name && <span className="detail-line"><span className="detail-label">Account Name: </span><span className="detail-value">{post.details.account_name}</span></span>}
                                     {post.details.case_number && <span className="detail-line"><span className="detail-label">Case Number: </span><span className="detail-value link">{post.details.case_number}</span></span>}
                                     {post.details.case_record_type && <span className="detail-line"><span className="detail-label">Case Record Type: </span><span className="detail-value">{post.details.case_record_type}</span></span>}
@@ -1850,16 +2273,32 @@ export default function Home() {
                         .filter(s => chatChannelFilter === "all" || s.channel === chatChannelFilter)
                         .filter(s => chatFilter === "all" || s.status === chatFilter)
                         .filter(s => !chatSearchTerm || s.customer_name.toLowerCase().includes(chatSearchTerm.toLowerCase()) || s.account.toLowerCase().includes(chatSearchTerm.toLowerCase()))
+                        .sort(sortChatSessions)
                         .map(s => (
                           <tr key={s.id} className={activeChat && activeChat.id === s.id ? 'active' : ''} onClick={() => { setActiveChat(s); setChatViewMode('chat'); }}>
-                            <td><i className={`fa-regular fa-star pin-star`}></i></td>
+                            <td onClick={(e) => togglePinChat(s.id, e)}>
+                              <i className={`${s.pinned ? 'fa-solid' : 'fa-regular'} fa-star pin-star`} style={{ color: s.pinned ? 'var(--color-warning)' : 'inherit', cursor: 'pointer' }}></i>
+                            </td>
                             <td><strong style={{ color: 'var(--color-primary)' }}>{s.id}</strong></td>
                             <td>
-                              <span className={`status-pill ${s.status}`}>
-                                {s.status === "active" ? "OPEN" : s.status === "waiting" ? "WAITING" : "CLOSED"}
-                                {s.status === "active" && <span className="open-time" style={{ marginLeft: '4px' }}>0 mins</span>}
+                              <span className={`status-pill ${getChatColorStatus(s)}`}>
+                                {(() => {
+                                  const col = getChatColorStatus(s);
+                                  if (col === 'queued') return 'QUEUED';
+                                  if (col === 'inprogress') return 'IN PROGRESS';
+                                  if (col === 'pending-short') return 'PENDING SHORT';
+                                  if (col === 'pending-medium') return 'PENDING MEDIUM';
+                                  if (col === 'pending-critical') return 'CRITICAL';
+                                  return s.status === "active" ? "OPEN" : s.status === "waiting" ? "WAITING" : "CLOSED";
+                                })()}
+                                {['pending-short', 'pending-medium', 'pending-critical'].includes(getChatColorStatus(s)) && (
+                                  <span className="elapsed-time" style={{ color: 'inherit', marginLeft: '6px' }}>
+                                    ({getElapsedMinutes(s)}m)
+                                  </span>
+                                )}
                               </span>
                             </td>
+
                             <td>New</td>
                             <td>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -1915,6 +2354,7 @@ export default function Home() {
                         .filter(s => chatFilter === "all" || s.status === chatFilter)
                         .filter(s => chatChannelFilter === "all" || s.channel === chatChannelFilter)
                         .filter(s => !chatSearchTerm || s.customer_name.toLowerCase().includes(chatSearchTerm.toLowerCase()) || s.account.toLowerCase().includes(chatSearchTerm.toLowerCase()))
+                        .sort(sortChatSessions)
                         .map(s => (
                           <div key={s.id} className={`chat-list-entry ${activeChat && activeChat.id === s.id ? 'active' : ''}`} onClick={() => setActiveChat(s)}>
                             <div className="chat-avatar">
@@ -1925,13 +2365,29 @@ export default function Home() {
                             </div>
                             <div className="chat-entry-info">
                               <div className="chat-entry-top">
-                                <span className="chat-entry-name">{s.customer_name}</span>
+                                <span className="chat-entry-name" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  {s.customer_name}
+                                  <i className={`${s.pinned ? 'fa-solid' : 'fa-regular'} fa-star`} style={{ color: s.pinned ? 'var(--color-warning)' : 'var(--text-muted)', cursor: 'pointer', fontSize: '11px' }} onClick={(e) => togglePinChat(s.id, e)}></i>
+                                </span>
                                 <span className="chat-entry-time">{s.last_time}</span>
                               </div>
                               <div className="chat-entry-preview">{s.last_message}</div>
                               <div className="chat-entry-status">
-                                <span className={`status-dot ${s.status}`}></span>
-                                <span>{s.status === "active" ? "Active" : s.status === "waiting" ? "Waiting" : "Closed"}</span>
+                                <span className={`status-dot ${getChatColorStatus(s)}`}></span>
+                                <span>
+                                  {(() => {
+                                    const col = getChatColorStatus(s);
+                                    if (col === 'queued') return 'Queued';
+                                    if (col === 'inprogress') return 'In Progress';
+                                    if (col === 'pending-short') return 'Pending';
+                                    if (col === 'pending-medium') return 'Pending';
+                                    if (col === 'pending-critical') return 'Critical';
+                                    return s.status === "active" ? "Active" : s.status === "waiting" ? "Waiting" : "Closed";
+                                  })()}
+                                </span>
+                                {['pending-short', 'pending-medium', 'pending-critical'].includes(getChatColorStatus(s)) && (
+                                  <span className="elapsed-time">({getElapsedMinutes(s)}m ago)</span>
+                                )}
                               </div>
                             </div>
                             {s.unread > 0 && <span className="unread-badge">{s.unread}</span>}
@@ -1968,7 +2424,8 @@ export default function Home() {
                             <label className="switch-control" style={{ transform: 'scale(0.7)' }}><input type="checkbox" /><span className="switch-slider"></span></label>
                             <span>Internal</span>
                           </div>
-                          <button className="toolbar-btn"><i className="fa-solid fa-paperclip"></i> File</button>
+                          <button className="toolbar-btn" onClick={() => fileInputRef.current?.click()}><i className="fa-solid fa-paperclip"></i> File</button>
+                          <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*,audio/*,video/*,.pdf,.doc,.docx" onChange={handleFileChange} />
                           <select defaultValue="">
                             <option value="">-- Auto Message --</option>
                             <option value="greeting">สวัสดีค่ะ ยินดีให้บริการ</option>
@@ -1981,32 +2438,53 @@ export default function Home() {
                         <div className="chat-messages-area">
                           {activeChat.messages.map((msg, idx) => (
                             <div key={idx} className={`chat-bubble-wrapper ${msg.sender}`}>
-                              <div className="chat-bubble">{msg.text}</div>
+                              <div className="chat-bubble">
+                                {msg.text}
+                                {msg.attachment && (
+                                  <div style={{ marginTop: '8px' }}>
+                                    {msg.attachment.type.startsWith('image/') ? (
+                                      <img src={msg.attachment.data} className="chat-bubble-image" alt={msg.attachment.name} onClick={() => {
+                                        const w = window.open();
+                                        w.document.write(`<img src="${msg.attachment.data}" style="max-width:100%; max-height:100%; margin:auto; display:block;"/>`);
+                                      }} />
+                                    ) : msg.attachment.type.startsWith('audio/') ? (
+                                      <audio controls src={msg.attachment.data} className="chat-bubble-audio" />
+                                    ) : msg.attachment.type.startsWith('video/') ? (
+                                      <video controls src={msg.attachment.data} className="chat-bubble-video" />
+                                    ) : (
+                                      <a href={msg.attachment.data} download={msg.attachment.name} className="file-attachment-link">
+                                        <i className="fa-solid fa-download"></i> Download {msg.attachment.name}
+                                      </a>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                               <div className="chat-bubble-meta">{msg.sender === "bot" ? "Bot" : msg.sender === "agent" ? "Agent" : msg.sender === "system" ? "System" : activeChat.customer_name} • {msg.time}</div>
                             </div>
                           ))}
                         </div>
 
-                        <div className="chat-input-area">
-                          <textarea placeholder="Chat with customer..." value={chatMessageInput} onChange={e => setChatMessageInput(e.target.value)} onKeyDown={e => {
-                            if (e.key === 'Enter' && !e.shiftKey && chatMessageInput.trim()) {
-                              e.preventDefault();
-                              const newMsg = { sender: "agent", text: chatMessageInput, time: new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) };
-                              const updated = { ...activeChat, messages: [...activeChat.messages, newMsg], last_message: chatMessageInput, last_time: "Just now" };
-                              setActiveChat(updated);
-                              setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
-                              setChatMessageInput("");
-                            }
-                          }} />
-                          <button className="send-btn" onClick={() => {
-                            if (chatMessageInput.trim()) {
-                              const newMsg = { sender: "agent", text: chatMessageInput, time: new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) };
-                              const updated = { ...activeChat, messages: [...activeChat.messages, newMsg], last_message: chatMessageInput, last_time: "Just now" };
-                              setActiveChat(updated);
-                              setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
-                              setChatMessageInput("");
-                            }
-                          }}>Send</button>
+                        <div className="chat-input-area" style={{ flexDirection: 'column' }}>
+                          {chatFilePreview && (
+                            <div className="file-preview-bar" style={{ width: '100%' }}>
+                              <div className="file-preview-info">
+                                <i className={chatFilePreview.type.startsWith('image/') ? 'fa-solid fa-file-image' : chatFilePreview.type.startsWith('audio/') ? 'fa-solid fa-file-audio' : chatFilePreview.type.startsWith('video/') ? 'fa-solid fa-file-video' : 'fa-solid fa-file'}></i>
+                                <span>{chatFilePreview.name}</span>
+                              </div>
+                              <button className="file-preview-remove" onClick={() => setChatFilePreview(null)}>
+                                <i className="fa-solid fa-xmark"></i>
+                              </button>
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', width: '100%', gap: '8px' }}>
+                            <textarea placeholder="Chat with customer..." value={chatMessageInput} onChange={e => setChatMessageInput(e.target.value)} onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSendChatSessionMessage();
+                              }
+                            }} />
+                            <button className="send-btn" onClick={handleSendChatSessionMessage}>Send</button>
+                          </div>
                         </div>
                       </>
                     ) : (

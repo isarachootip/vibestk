@@ -23,6 +23,7 @@ export async function POST(request) {
         const session = sessionResult.rows[0];
         const platform = session.platform;
         const platformUserId = session.platform_user_id;
+        const channelId = session.channel_id;
         const timeStr = new Date().toLocaleString('en-GB', {
             day: '2-digit', month: 'short', year: '2-digit',
             hour: '2-digit', minute: '2-digit'
@@ -31,11 +32,16 @@ export async function POST(request) {
         let sent = false;
 
         if (platform === 'line') {
-            // Get LINE credentials
+            // Get LINE credentials for specific channel_id
             let accessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
             try {
-                const configResult = await query("SELECT config FROM social_configs WHERE platform = 'line'");
-                if (configResult.rows.length > 0) {
+                let configResult;
+                if (channelId) {
+                    configResult = await query("SELECT config FROM social_configs WHERE channel_id = $1 AND platform = 'line'", [channelId]);
+                } else {
+                    configResult = await query("SELECT config FROM social_configs WHERE platform = 'line' LIMIT 1");
+                }
+                if (configResult && configResult.rows.length > 0) {
                     accessToken = configResult.rows[0].config.accessToken || accessToken;
                 }
             } catch (e) { /* use env fallback */ }
@@ -59,11 +65,16 @@ export async function POST(request) {
                 }
             }
         } else if (platform === 'facebook') {
-            // Get Facebook credentials
+            // Get Facebook credentials for specific page_id (channel_id)
             let pageAccessToken = process.env.FB_PAGE_ACCESS_TOKEN;
             try {
-                const configResult = await query("SELECT config FROM social_configs WHERE platform = 'facebook'");
-                if (configResult.rows.length > 0) {
+                let configResult;
+                if (channelId) {
+                    configResult = await query("SELECT config FROM social_configs WHERE channel_id = $1 AND platform = 'facebook'", [channelId]);
+                } else {
+                    configResult = await query("SELECT config FROM social_configs WHERE platform = 'facebook' LIMIT 1");
+                }
+                if (configResult && configResult.rows.length > 0) {
                     pageAccessToken = configResult.rows[0].config.accessToken || pageAccessToken;
                 }
             } catch (e) { /* use env fallback */ }

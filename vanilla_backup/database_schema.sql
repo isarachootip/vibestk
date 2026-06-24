@@ -36,7 +36,7 @@ CREATE TABLE agents (
 
 -- 3. OPPORTUNITIES TABLE (Kanban & Call targets)
 CREATE TABLE opportunities (
-    id VARCHAR(10) PRIMARY KEY,
+    id VARCHAR(50) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     company VARCHAR(255) NOT NULL,
     contact_name VARCHAR(100) NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE customers (
 -- 5. CHAT MESSAGES TABLE (LINE OA & Facebook Messenger History)
 CREATE TABLE chat_messages (
     id SERIAL PRIMARY KEY,
-    opportunity_id VARCHAR(10) REFERENCES opportunities(id) ON DELETE CASCADE,
+    opportunity_id VARCHAR(50) REFERENCES opportunities(id) ON DELETE CASCADE,
     sender VARCHAR(10) NOT NULL, -- client, agent
     text TEXT NOT NULL,
     time VARCHAR(10) NOT NULL, -- "HH:MM"

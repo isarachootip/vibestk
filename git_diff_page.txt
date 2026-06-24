@@ -1,0 +1,727 @@
+﻿diff --git a/app/page.js b/app/page.js
+index 6c6697b..3c4c11f 100644
+--- a/app/page.js
++++ b/app/page.js
+@@ -125,6 +125,19 @@ export default function Home() {
+   const [activeTab, setActiveTab] = useState("home");
+   const [serverConnected, setServerConnected] = useState(false);
+   const [serverMode, setServerMode] = useState("Mock In-Memory");
++
++  // Feature 1: Email Compose states
++  const [emailForm, setEmailForm] = useState({ to: '', cc: '', subject: '', body: '' });
++  const [emailSending, setEmailSending] = useState(false);
++
++  // Feature 2: File Upload states
++  const [chatFilePreview, setChatFilePreview] = useState(null);
++  const fileInputRef = useRef(null);
++
++  // Feature 4: Break Countdown states
++  const [breakCountdown, setBreakCountdown] = useState(0);
++  const [breakType, setBreakType] = useState(null);
++  const breakIntervalRef = useRef(null);
+   
+   const [permissions, setPermissions] = useState(LOCAL_STATE_PERMISSIONS);
+   const [opportunities, setOpportunities] = useState(LOCAL_STATE_OPPORTUNITIES);
+@@ -138,6 +151,16 @@ export default function Home() {
+   const [caseStatusFilter, setCaseStatusFilter] = useState("all");
+   const [casePriorityFilter, setCasePriorityFilter] = useState("all");
+   const [selectedCase, setSelectedCase] = useState(null);
++  useEffect(() => {
++    if (selectedCase) {
++      setEmailForm({
++        to: selectedCase.contact_email || "",
++        cc: "",
++        subject: `Re: Case #${selectedCase.case_number} ΓÇö ${selectedCase.subject}`,
++        body: ""
++      });
++    }
++  }, [selectedCase]);
+   const [caseContentTab, setCaseContentTab] = useState("chatter");
+   const [chatterSubTab, setChatterSubTab] = useState("post");
+   const [chatterInput, setChatterInput] = useState("");
+@@ -535,8 +558,40 @@ export default function Home() {
+         }
+       }
+     }, 15000);
++  // Feature 4: Break Time Countdown Timer
++  useEffect(() => {
++    if (breakCountdown > 0) {
++      breakIntervalRef.current = setInterval(() => {
++        setBreakCountdown(prev => {
++          if (prev <= 1) {
++            clearInterval(breakIntervalRef.current);
++            handleStatusChange("online");
++            showToast("α╕½α╕íα╕öα╣Çα╕ºα╕Ñα╕▓α╕₧α╕▒α╕ü", "α╕¬α╕ûα╕▓α╕Öα╕░α╕éα╕¡α╕çα╕äα╕╕α╕ôα╕ûα╕╣α╕üα╕¢α╕úα╕▒α╕Üα╣Çα╕¢α╣çα╕Ö α╕ºα╣êα╕▓α╕ç (Online) α╕¡α╕▒α╕òα╣éα╕Öα╕íα╕▒α╕òα╕┤", "info");
++            return 0;
++          }
++          return prev - 1;
++        });
++      }, 1000);
++    } else {
++      if (breakIntervalRef.current) {
++        clearInterval(breakIntervalRef.current);
++      }
++    }
++    return () => {
++      if (breakIntervalRef.current) {
++        clearInterval(breakIntervalRef.current);
++      }
++    };
++  }, [breakCountdown]);
++
++  // Feature 5: Periodic tick to update elapsed time color coding
++  const [tick, setTick] = useState(0);
++  useEffect(() => {
++    const interval = setInterval(() => {
++      setTick(t => t + 1);
++    }, 15000); // tick every 15s to update color statuses
+     return () => clearInterval(interval);
+-  }, [showLogin, agents]);
++  }, []);
+ 
+   // Dashboard Chart.js Integration Hook
+   useEffect(() => {
+@@ -669,8 +724,33 @@ export default function Home() {
+   };
+ 
+   const handleStatusChange = async (newStatus) => {
++    // Check threshold for breaks
++    const isBreak = ["break10", "break60", "demand50"].includes(newStatus);
++    if (isBreak) {
++      const activeChatsCount = chatSessions.filter(s => s.assigned_to === user.name && s.status === "active").length;
++      if (activeChatsCount >= 5) {
++        showToast("α╣äα╕íα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕₧α╕▒α╕üα╣äα╕öα╣ë", `α╣äα╕íα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╣Çα╕¢α╕Ñα╕╡α╣êα╕óα╕Öα╕¬α╕ûα╕▓α╕Öα╕░α╣Çα╕¢α╣çα╕Öα╕₧α╕▒α╕üα╣äα╕öα╣ë α╣Çα╕Öα╕╖α╣êα╕¡α╕çα╕êα╕▓α╕üα╕íα╕╡α╕çα╕▓α╕Öα╕¡α╕óα╕╣α╣êα╣âα╕Öα╕íα╕╖α╕¡ ${activeChatsCount} α╕äα╕┤α╕º (α╕êα╕│α╕üα╕▒α╕öα╣äα╕íα╣êα╣Çα╕üα╕┤α╕Ö 4 α╕äα╕┤α╕º)`, "danger");
++        return;
++      }
++    }
++
+     setUser(prev => ({ ...prev, status: newStatus }));
+     
++    // Manage countdown timer
++    if (newStatus === "break10") {
++      setBreakCountdown(600); // 10 minutes
++      setBreakType("break10");
++    } else if (newStatus === "break60") {
++      setBreakCountdown(3600); // 60 minutes
++      setBreakType("break60");
++    } else if (newStatus === "demand50") {
++      setBreakCountdown(3000); // 50 minutes
++      setBreakType("demand50");
++    } else {
++      setBreakCountdown(0);
++      setBreakType(null);
++    }
++    
+     try {
+       await fetch("/api/agents/status", {
+         method: "POST",
+@@ -682,14 +762,228 @@ export default function Home() {
+     }
+     
+     let label = "α╕ºα╣êα╕▓α╕ç (Online)";
+-    if (newStatus === "break") label = "α╕₧α╕▒α╕üα╣Çα╕Üα╕úα╕ü (Break)";
+-    else if (newStatus === "lunch") label = "α╕₧α╕▒α╕üα╣Çα╕ùα╕╡α╣êα╕óα╕ç (Lunch)";
++    if (newStatus === "break10") label = "Γÿò α╕₧α╕▒α╕üα╣Çα╕Üα╕úα╕ü 10 α╕Öα╕▓α╕ùα╕╡ (Break 10 Min)";
++    else if (newStatus === "break60") label = "≡ƒì╜∩╕Å α╕₧α╕▒α╕üα╕ùα╕▓α╕Öα╕éα╣ëα╕▓α╕º 60 α╕Öα╕▓α╕ùα╕╡ (Lunch 60 Min)";
++    else if (newStatus === "demand50") label = "≡ƒôï α╕ÿα╕╕α╕úα╕░α╕¬α╣êα╕ºα╕Öα╕òα╕▒α╕º 50 α╕Öα╕▓α╕ùα╕╡ (Demand 50 Min)";
+     else if (newStatus === "offline") label = "α╕¡α╕¡α╕ƒα╣äα╕Ñα╕Öα╣î (Offline)";
+     
+     showToast("α╕¢α╕úα╕▒α╕Üα╕¢α╕úα╕╕α╕çα╕¬α╕ûα╕▓α╕Öα╕░α╕éα╕¡α╕çα╕äα╕╕α╕ô", `α╣üα╕üα╣ëα╣äα╕éα╕¬α╕ûα╕▓α╕Öα╕░α╣üα╕¡α╕¢α╣Çα╕¢α╣çα╕Ö: ${label}`, "info");
+     fetchAgents();
+   };
+ 
++  const getChatColorStatus = (session) => {
++    if (!session.assigned_to) return 'queued'; // ≡ƒƒó α╣Çα╕éα╕╡α╕óα╕º ΓÇö New/Queued
++    if (session.status !== 'active' && session.status !== 'waiting') return 'closed'; // Offline/Closed
++    
++    if (session.status === 'active') return 'inprogress'; // ≡ƒö┤ α╣üα╕öα╕ç ΓÇö In Progress
++    
++    const lastAgentMsg = session.messages?.filter(m => m.sender === 'agent').pop();
++    if (!lastAgentMsg) return 'inprogress';
++    
++    let messageTime;
++    try {
++      const parts = lastAgentMsg.time.split(' ');
++      if (parts.length === 2) {
++        const dateParts = parts[0].split('-');
++        const timeParts = parts[1].split(':');
++        if (dateParts.length === 3 && timeParts.length === 2) {
++          const months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
++          const year = parseInt("20" + dateParts[2]);
++          const month = months[dateParts[1]] || 0;
++          const day = parseInt(dateParts[0]);
++          const hour = parseInt(timeParts[0]);
++          const min = parseInt(timeParts[1]);
++          messageTime = new Date(year, month, day, hour, min).getTime();
++        }
++      }
++    } catch (e) {
++      console.error(e);
++    }
++    
++    if (!messageTime) {
++      messageTime = new Date(lastAgentMsg.time).getTime();
++    }
++    
++    if (isNaN(messageTime)) return 'inprogress';
++    
++    const elapsed = (Date.now() - messageTime) / 60000; // in minutes
++    if (elapsed < 15) return 'pending-short'; // ≡ƒö╡ α╕ƒα╣ëα╕▓ ΓÇö Pending < 15 min
++    if (elapsed <= 30) return 'pending-medium'; // ≡ƒƒú α╕íα╣êα╕ºα╕ç ΓÇö Pending 15-30 min
++    return 'pending-critical'; // ΓÜ½ α╕öα╕│ ΓÇö Pending > 30 min
++  };
++
++  const getElapsedMinutes = (session) => {
++    const lastAgentMsg = session.messages?.filter(m => m.sender === 'agent').pop();
++    if (!lastAgentMsg) return 0;
++    
++    let messageTime;
++    try {
++      const parts = lastAgentMsg.time.split(' ');
++      if (parts.length === 2) {
++        const dateParts = parts[0].split('-');
++        const timeParts = parts[1].split(':');
++        if (dateParts.length === 3 && timeParts.length === 2) {
++          const months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
++          const year = parseInt("20" + dateParts[2]);
++          const month = months[dateParts[1]] || 0;
++          const day = parseInt(dateParts[0]);
++          const hour = parseInt(timeParts[0]);
++          const min = parseInt(timeParts[1]);
++          messageTime = new Date(year, month, day, hour, min).getTime();
++        }
++      }
++    } catch (e) {
++      console.error(e);
++    }
++    
++    if (!messageTime) {
++      messageTime = new Date(lastAgentMsg.time).getTime();
++    }
++    
++    if (isNaN(messageTime)) return 0;
++    
++    return Math.floor((Date.now() - messageTime) / 60000);
++  };
++
++  const getColorWeight = (colorStatus) => {
++    switch (colorStatus) {
++      case 'pending-critical': return 5;
++      case 'pending-medium': return 4;
++      case 'pending-short': return 3;
++      case 'inprogress': return 2;
++      case 'queued': return 1;
++      default: return 0;
++    }
++  };
++
++  const sortChatSessions = (a, b) => {
++    const pinA = a.pinned ? 1 : 0;
++    const pinB = b.pinned ? 1 : 0;
++    if (pinA !== pinB) {
++      return pinB - pinA;
++    }
++    const weightA = getColorWeight(getChatColorStatus(a));
++    const weightB = getColorWeight(getChatColorStatus(b));
++    if (weightA !== weightB) {
++      return weightB - weightA;
++    }
++    return b.id.localeCompare(a.id);
++  };
++
++  const togglePinChat = (sessionId, e) => {
++    if (e) e.stopPropagation();
++    setChatSessions(prev => prev.map(s => s.id === sessionId ? { ...s, pinned: !s.pinned } : s));
++    setActiveChat(prev => {
++      if (prev && prev.id === sessionId) {
++        return { ...prev, pinned: !prev.pinned };
++      }
++      return prev;
++    });
++    showToast("α╕¡α╕▒α╕¢α╣Çα╕öα╕òα╕üα╕▓α╕úα╕¢α╕▒α╕üα╕½α╕íα╕╕α╕ö", "α╕¢α╕úα╕▒α╕Üα╕¢α╕úα╕╕α╕çα╕¬α╕ûα╕▓α╕Öα╕░α╕¢α╕▒α╕üα╕½α╕íα╕╕α╕öα╕üα╕▓α╕úα╕¬α╕Öα╕ùα╕Öα╕▓α╣Çα╕úα╕╡α╕óα╕Üα╕úα╣ëα╕¡α╕ó", "success");
++  };
++
++
++  const handleSendEmail = async () => {
++    if (!emailForm.to || !emailForm.subject || !emailForm.body) {
++      showToast("α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö", "α╕üα╕úα╕╕α╕ôα╕▓α╕üα╕úα╕¡α╕ü To, Subject α╣üα╕Ñα╕░ Body α╣âα╕½α╣ëα╕äα╕úα╕Üα╕ûα╣ëα╕ºα╕Ö", "danger");
++      return;
++    }
++
++    setEmailSending(true);
++    try {
++      const res = await fetch("/api/email/send", {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({
++          to: emailForm.to,
++          cc: emailForm.cc,
++          subject: emailForm.subject,
++          emailBody: emailForm.body
++        })
++      });
++
++      const data = await res.json();
++      if (data.success) {
++        const updated = {
++          ...selectedCase,
++          chatter_posts: [
++            {
++              user: user.name,
++              avatar: null,
++              action: "Email sent",
++              timestamp: "Just now",
++              details: {
++                comment: `To: ${emailForm.to}\nCC: ${emailForm.cc || 'ΓÇö'}\nSubject: ${emailForm.subject}\n\n${emailForm.body}`,
++                is_email: true,
++                to: emailForm.to,
++                cc: emailForm.cc,
++                subject: emailForm.subject
++              }
++            },
++            ...(selectedCase.chatter_posts || [])
++          ]
++        };
++        setSelectedCase(updated);
++        setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
++        setEmailForm(prev => ({ ...prev, body: "" })); // Clear email body
++        showToast("α╕¬α╣êα╕çα╕¡α╕╡α╣Çα╕íα╕Ñα╕¬α╕│α╣Çα╕úα╣çα╕ê", "α╕¬α╣êα╕çα╕¡α╕╡α╣Çα╕íα╕Ñα╕ûα╕╢α╕çα╕Ñα╕╣α╕üα╕äα╣ëα╕▓α╣Çα╕úα╕╡α╕óα╕Üα╕úα╣ëα╕¡α╕óα╣üα╕Ñα╣ëα╕º (α╕êα╕│α╕Ñα╕¡α╕ç)", "success");
++      } else {
++        throw new Error(data.error);
++      }
++    } catch (err) {
++      showToast("α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö", err.message || "α╣äα╕íα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¬α╣êα╕çα╕¡α╕╡α╣Çα╕íα╕Ñα╣äα╕öα╣ë", "danger");
++    } finally {
++      setEmailSending(false);
++    }
++  };
++
++  const handleFileChange = (e) => {
++    const file = e.target.files[0];
++    if (!file) return;
++
++    const reader = new FileReader();
++    reader.onload = () => {
++      setChatFilePreview({
++        name: file.name,
++        type: file.type,
++        data: reader.result
++      });
++      showToast("α╣Çα╕òα╕úα╕╡α╕óα╕íα╕¬α╣êα╕çα╣äα╕ƒα╕Ñα╣î", `α╣Çα╕Ñα╕╖α╕¡α╕üα╣äα╕ƒα╕Ñα╣î: ${file.name} α╣üα╕Ñα╣ëα╕º`, "info");
++    };
++    reader.onerror = (err) => {
++      console.error(err);
++      showToast("α╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö", "α╣äα╕íα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¡α╣êα╕▓α╕Öα╣äα╕ƒα╕Ñα╣îα╣äα╕öα╣ë", "danger");
++    };
++    reader.readAsDataURL(file);
++    e.target.value = null;
++  };
++
++  const handleSendChatMessage = () => {
++    if (!chatMessageInput.trim() && !chatFilePreview) return;
++
++    const timeStr = new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' });
++    const msgText = chatMessageInput.trim() || `α╕¬α╣êα╕çα╣äα╕ƒα╕Ñα╣î: ${chatFilePreview.name}`;
++    
++    const newMsg = {
++      sender: "agent",
++      text: msgText,
++      time: timeStr,
++      ...(chatFilePreview ? { attachment: chatFilePreview } : {})
++    };
++
++    const updated = {
++      ...activeChat,
++      messages: [...activeChat.messages, newMsg],
++      last_message: msgText,
++      last_time: "Just now"
++    };
++
++    setActiveChat(updated);
++    setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
++    setChatMessageInput("");
++    setChatFilePreview(null);
++  };
++
+   // Drag-and-Drop Handlers
+   const handleDragStart = (e, oppId) => {
+     e.dataTransfer.setData("text/plain", oppId);
+@@ -1079,6 +1373,26 @@ export default function Home() {
+         </div>
+         <div className="sf-global-header__right">
+           <button className="sf-global-action" title="Setup"><i className="fa-solid fa-gear"></i></button>
++          {["role_a", "admin"].includes(user.role) && (
++            <button
++              className="sf-global-action"
++              title="Watch List"
++              onClick={() => {
++                setActiveTab('home');
++                setTimeout(() => {
++                  document.querySelector('.watchlist-panel')?.scrollIntoView({ behavior: 'smooth' });
++                }, 100);
++              }}
++              style={{ position: 'relative' }}
++            >
++              <i className="fa-solid fa-triangle-exclamation" style={{ color: 'var(--color-danger)' }}></i>
++              {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length > 0 && (
++                <span className="sf-notif-badge" style={{ backgroundColor: 'var(--color-danger)' }}>
++                  {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length}
++                </span>
++              )}
++            </button>
++          )}
+           <button className="sf-global-action" title="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
+             <i className="fa-solid fa-bell"></i>
+             {notifications.filter(n => n.unread).length > 0 && <span className="sf-notif-badge">{notifications.filter(n => n.unread).length}</span>}
+@@ -1159,11 +1473,19 @@ export default function Home() {
+           <div className="header-right">
+             {/* Live Agent Status Select */}
+             <div className="agent-status-panel">
+-              <span className={`status-indicator-dot ${user.status}`}></span>
++              {breakCountdown > 0 && (
++                <div className={`break-countdown ${breakCountdown < 60 ? 'urgent' : ''}`}>
++                  <i className="fa-solid fa-clock"></i> {Math.floor(breakCountdown / 60)}:{(breakCountdown % 60).toString().padStart(2, '0')}
++                </div>
++              )}
++              <span className={`status-indicator-dot ${
++                ["break10", "break60", "demand50"].includes(user.status) ? "break" : user.status
++              }`}></span>
+               <select id="agent-status-select" className="status-select" value={user.status} onChange={(e) => handleStatusChange(e.target.value)}>
+                 <option value="online">α╕ºα╣êα╕▓α╕ç (Available)</option>
+-                <option value="break">α╕₧α╕▒α╕üα╣Çα╕Üα╕úα╕ü (Break)</option>
+-                <option value="lunch">α╕₧α╕▒α╕üα╕ùα╕▓α╕Öα╕éα╣ëα╕▓α╕º (Lunch)</option>
++                <option value="break10">Γÿò α╕₧α╕▒α╕üα╣Çα╕Üα╕úα╕ü 10 α╕Öα╕▓α╕ùα╕╡ (Break 10 Min)</option>
++                <option value="break60">≡ƒì╜∩╕Å α╕₧α╕▒α╕üα╕ùα╕▓α╕Öα╕éα╣ëα╕▓α╕º 60 α╕Öα╕▓α╕ùα╕╡ (Lunch 60 Min)</option>
++                <option value="demand50">≡ƒôï α╕ÿα╕╕α╕úα╕░α╕¬α╣êα╕ºα╕Öα╕òα╕▒α╕º 50 α╕Öα╕▓α╕ùα╕╡ (Demand 50 Min)</option>
+                 <option value="offline">α╕¡α╕¡α╕ƒα╣äα╕Ñα╕Öα╣î (Offline)</option>
+               </select>
+             </div>
+@@ -1309,6 +1631,66 @@ export default function Home() {
+                   </div>
+                 </div>
+               </div>
++
++              {/* Feature 3: Watch List Panel */}
++              {["role_a", "admin"].includes(user.role) && (
++                <div className="watchlist-panel" style={{ marginTop: "24px" }}>
++                  <h3>
++                    <i className="fa-solid fa-triangle-exclamation"></i> α╕Ñα╕╣α╕üα╕äα╣ëα╕▓α╣Çα╕¥α╣ëα╕▓α╕úα╕░α╕ºα╕▒α╕ç (Watch List) ΓÇö α╣Çα╕äα╕¬α╕ºα╕┤α╕üα╕ñα╕ò/α╕äα╕ºα╕▓α╕íα╕¬α╕│α╕äα╕▒α╕ìα╕¬α╕╣α╕ç
++                    <span className="watchlist-badge" style={{ marginLeft: "10px" }}>
++                      {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length}
++                    </span>
++                  </h3>
++                  <div className="watchlist-table-wrap">
++                    <table className="watchlist-table">
++                      <thead>
++                        <tr>
++                          <th>Case ID</th>
++                          <th>α╕½α╕▒α╕ºα╕éα╣ëα╕¡ (Subject)</th>
++                          <th>α╕Ñα╕╣α╕üα╕äα╣ëα╕▓ (Customer)</th>
++                          <th>α╕äα╕ºα╕▓α╕íα╕¬α╕│α╕äα╕▒α╕ì (Priority)</th>
++                          <th>α╕¬α╕ûα╕▓α╕Öα╕░ (Status)</th>
++                          <th>α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╕£α╕┤α╕öα╕èα╕¡α╕Ü (Owner)</th>
++                        </tr>
++                      </thead>
++                      <tbody>
++                        {cases
++                          .filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved")
++                          .map(c => (
++                            <tr key={c.id} onClick={() => {
++                              setSelectedCase(c);
++                              setCaseContentTab('chatter');
++                              setActiveTab('case');
++                            }}>
++                              <td style={{ fontWeight: "700", color: "var(--color-primary)" }}>{c.case_number}</td>
++                              <td>{c.subject}</td>
++                              <td>{c.account_name || c.contact_name}</td>
++                              <td>
++                                <span className={`case-priority-badge ${c.priority.toLowerCase()}`}>
++                                  {c.priority}
++                                </span>
++                              </td>
++                              <td>
++                                <span className={`case-status-badge ${c.status.toLowerCase()}`}>
++                                  {c.status}
++                                </span>
++                              </td>
++                              <td>{c.owner || "Unassigned"}</td>
++                            </tr>
++                          ))
++                        }
++                        {cases.filter(c => ["critical", "high"].includes(c.priority.toLowerCase()) && c.status !== "closed" && c.status !== "solved").length === 0 && (
++                          <tr>
++                            <td colSpan="6" style={{ textAlign: "center", padding: "20px", color: "var(--text-muted)" }}>
++                              α╣äα╕íα╣êα╕íα╕╡α╣Çα╕äα╕¬α╣Çα╕¥α╣ëα╕▓α╕úα╕░α╕ºα╕▒α╕çα╕ùα╕╡α╣êα╕üα╕│α╕Ñα╕▒α╕çα╕öα╕│α╣Çα╕Öα╕┤α╕Öα╕üα╕▓α╕úα╕¡α╕óα╕╣α╣ê ≡ƒÄë
++                            </td>
++                          </tr>
++                        )}
++                      </tbody>
++                    </table>
++                  </div>
++                </div>
++              )}
+             </div>
+           )}
+ 
+@@ -1397,6 +1779,15 @@ export default function Home() {
+                           <button className="sf-btn follow"><i className="fa-solid fa-plus" style={{ marginRight: '4px' }}></i> Follow</button>
+                           <button className="sf-btn">Edit</button>
+                           <button className="sf-btn">Change Record Type</button>
++                          <button
++                            className="sf-btn"
++                            onClick={() => {
++                              setCaseContentTab('chatter');
++                              setChatterSubTab('email');
++                            }}
++                          >
++                            <i className="fa-solid fa-envelope"></i> Email
++                          </button>
+                         </div>
+                       </div>
+                     </div>
+@@ -1440,21 +1831,42 @@ export default function Home() {
+                             <button className={chatterSubTab === "email" ? "active" : ""} onClick={() => setChatterSubTab("email")}>Email</button>
+                           </div>
+ 
+-                          {/* Compose Box */}
+-                          <div className="sf-chatter-compose">
+-                            <input className="compose-input" type="text" placeholder="Share an update..." value={chatterInput} onChange={e => setChatterInput(e.target.value)} />
+-                            <div className="compose-actions">
+-                              <button className="share-btn" onClick={() => {
+-                                if (chatterInput.trim()) {
+-                                  const updated = { ...selectedCase, chatter_posts: [{ user: user.name, avatar: null, action: "Posted", timestamp: "Just now", details: { comment: chatterInput } }, ...(selectedCase.chatter_posts || [])] };
+-                                  setSelectedCase(updated);
+-                                  setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
+-                                  setChatterInput("");
+-                                  showToast("Chatter", "Update posted successfully", "success");
+-                                }
+-                              }}>Share</button>
++                           {/* Compose Box */}
++                          {chatterSubTab === "post" ? (
++                            <div className="sf-chatter-compose">
++                              <input className="compose-input" type="text" placeholder="Share an update..." value={chatterInput} onChange={e => setChatterInput(e.target.value)} />
++                              <div className="compose-actions">
++                                <button className="share-btn" onClick={() => {
++                                  if (chatterInput.trim()) {
++                                    const updated = { ...selectedCase, chatter_posts: [{ user: user.name, avatar: null, action: "Posted", timestamp: "Just now", details: { comment: chatterInput } }, ...(selectedCase.chatter_posts || [])] };
++                                    setSelectedCase(updated);
++                                    setCases(prev => prev.map(c => c.id === updated.id ? updated : c));
++                                    setChatterInput("");
++                                    showToast("Chatter", "Update posted successfully", "success");
++                                  }
++                                }}>Share</button>
++                              </div>
+                             </div>
+-                          </div>
++                          ) : (
++                            <div className="email-compose-form">
++                              <div className="email-field-row">
++                                <label>To:</label>
++                                <input type="email" value={emailForm.to} onChange={e => setEmailForm(prev => ({ ...prev, to: e.target.value }))} placeholder="recipient@example.com" />
++                              </div>
++                              <div className="email-field-row">
++                                <label>CC:</label>
++                                <input type="email" value={emailForm.cc} onChange={e => setEmailForm(prev => ({ ...prev, cc: e.target.value }))} placeholder="cc@example.com" />
++                              </div>
++                              <div className="email-field-row">
++                                <label>Subject:</label>
++                                <input type="text" value={emailForm.subject} onChange={e => setEmailForm(prev => ({ ...prev, subject: e.target.value }))} placeholder="Subject" />
++                              </div>
++                              <textarea className="email-body-input" value={emailForm.body} onChange={e => setEmailForm(prev => ({ ...prev, body: e.target.value }))} placeholder="Write your email here..." />
++                              <button className="email-send-btn" onClick={handleSendEmail} disabled={emailSending}>
++                                {emailSending ? <><i className="fa-solid fa-spinner fa-spin"></i> Sending...</> : <><i className="fa-solid fa-paper-plane"></i> Send Email</>}
++                              </button>
++                            </div>
++                          )}
+ 
+                           {/* Activity Feed */}
+                           <div className="sf-activity-header">
+@@ -1480,14 +1892,22 @@ export default function Home() {
+                                   <span className="activity-time">{post.timestamp}</span>
+                                 </div>
+                                 <div className="activity-action">
+-                                  <span className={`action-badge ${post.action.toLowerCase().includes('created') ? 'created' : post.action.toLowerCase().includes('updated') || post.action.toLowerCase().includes('changed') ? 'updated' : 'comment'}`}>
+-                                    <i className={`fa-solid ${post.action.toLowerCase().includes('created') ? 'fa-plus-circle' : post.action.toLowerCase().includes('resolved') ? 'fa-check-circle' : 'fa-pen'}`}></i>
++                                  <span className={`action-badge ${
++                                    post.action.toLowerCase().includes('email') ? 'email' :
++                                    post.action.toLowerCase().includes('created') ? 'created' :
++                                    post.action.toLowerCase().includes('updated') || post.action.toLowerCase().includes('changed') ? 'updated' : 'comment'
++                                  }`}>
++                                    <i className={`fa-solid ${
++                                      post.action.toLowerCase().includes('email') ? 'fa-envelope' :
++                                      post.action.toLowerCase().includes('created') ? 'fa-plus-circle' :
++                                      post.action.toLowerCase().includes('resolved') ? 'fa-check-circle' : 'fa-pen'
++                                    }`}></i>
+                                     {post.action}
+                                   </span>
+                                 </div>
+                                 {post.details && (
+                                   <div className="activity-details">
+-                                    {post.details.comment && <span className="detail-line">{post.details.comment}</span>}
++                                    {post.details.comment && <span className="detail-line" style={{ whiteSpace: 'pre-wrap' }}>{post.details.comment}</span>}
+                                     {post.details.account_name && <span className="detail-line"><span className="detail-label">Account Name: </span><span className="detail-value">{post.details.account_name}</span></span>}
+                                     {post.details.case_number && <span className="detail-line"><span className="detail-label">Case Number: </span><span className="detail-value link">{post.details.case_number}</span></span>}
+                                     {post.details.case_record_type && <span className="detail-line"><span className="detail-label">Case Record Type: </span><span className="detail-value">{post.details.case_record_type}</span></span>}
+@@ -1850,16 +2270,32 @@ export default function Home() {
+                         .filter(s => chatChannelFilter === "all" || s.channel === chatChannelFilter)
+                         .filter(s => chatFilter === "all" || s.status === chatFilter)
+                         .filter(s => !chatSearchTerm || s.customer_name.toLowerCase().includes(chatSearchTerm.toLowerCase()) || s.account.toLowerCase().includes(chatSearchTerm.toLowerCase()))
++                        .sort(sortChatSessions)
+                         .map(s => (
+                           <tr key={s.id} className={activeChat && activeChat.id === s.id ? 'active' : ''} onClick={() => { setActiveChat(s); setChatViewMode('chat'); }}>
+-                            <td><i className={`fa-regular fa-star pin-star`}></i></td>
++                            <td onClick={(e) => togglePinChat(s.id, e)}>
++                              <i className={`${s.pinned ? 'fa-solid' : 'fa-regular'} fa-star pin-star`} style={{ color: s.pinned ? 'var(--color-warning)' : 'inherit', cursor: 'pointer' }}></i>
++                            </td>
+                             <td><strong style={{ color: 'var(--color-primary)' }}>{s.id}</strong></td>
+                             <td>
+-                              <span className={`status-pill ${s.status}`}>
+-                                {s.status === "active" ? "OPEN" : s.status === "waiting" ? "WAITING" : "CLOSED"}
+-                                {s.status === "active" && <span className="open-time" style={{ marginLeft: '4px' }}>0 mins</span>}
++                              <span className={`status-pill ${getChatColorStatus(s)}`}>
++                                {(() => {
++                                  const col = getChatColorStatus(s);
++                                  if (col === 'queued') return 'QUEUED';
++                                  if (col === 'inprogress') return 'IN PROGRESS';
++                                  if (col === 'pending-short') return 'PENDING SHORT';
++                                  if (col === 'pending-medium') return 'PENDING MEDIUM';
++                                  if (col === 'pending-critical') return 'CRITICAL';
++                                  return s.status === "active" ? "OPEN" : s.status === "waiting" ? "WAITING" : "CLOSED";
++                                })()}
++                                {['pending-short', 'pending-medium', 'pending-critical'].includes(getChatColorStatus(s)) && (
++                                  <span className="elapsed-time" style={{ color: 'inherit', marginLeft: '6px' }}>
++                                    ({getElapsedMinutes(s)}m)
++                                  </span>
++                                )}
+                               </span>
+                             </td>
++
+                             <td>New</td>
+                             <td>
+                               <div style={{ display: 'flex', flexDirection: 'column' }}>
+@@ -1915,6 +2351,7 @@ export default function Home() {
+                         .filter(s => chatFilter === "all" || s.status === chatFilter)
+                         .filter(s => chatChannelFilter === "all" || s.channel === chatChannelFilter)
+                         .filter(s => !chatSearchTerm || s.customer_name.toLowerCase().includes(chatSearchTerm.toLowerCase()) || s.account.toLowerCase().includes(chatSearchTerm.toLowerCase()))
++                        .sort(sortChatSessions)
+                         .map(s => (
+                           <div key={s.id} className={`chat-list-entry ${activeChat && activeChat.id === s.id ? 'active' : ''}`} onClick={() => setActiveChat(s)}>
+                             <div className="chat-avatar">
+@@ -1925,13 +2362,29 @@ export default function Home() {
+                             </div>
+                             <div className="chat-entry-info">
+                               <div className="chat-entry-top">
+-                                <span className="chat-entry-name">{s.customer_name}</span>
++                                <span className="chat-entry-name" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
++                                  {s.customer_name}
++                                  <i className={`${s.pinned ? 'fa-solid' : 'fa-regular'} fa-star`} style={{ color: s.pinned ? 'var(--color-warning)' : 'var(--text-muted)', cursor: 'pointer', fontSize: '11px' }} onClick={(e) => togglePinChat(s.id, e)}></i>
++                                </span>
+                                 <span className="chat-entry-time">{s.last_time}</span>
+                               </div>
+                               <div className="chat-entry-preview">{s.last_message}</div>
+                               <div className="chat-entry-status">
+-                                <span className={`status-dot ${s.status}`}></span>
+-                                <span>{s.status === "active" ? "Active" : s.status === "waiting" ? "Waiting" : "Closed"}</span>
++                                <span className={`status-dot ${getChatColorStatus(s)}`}></span>
++                                <span>
++                                  {(() => {
++                                    const col = getChatColorStatus(s);
++                                    if (col === 'queued') return 'Queued';
++                                    if (col === 'inprogress') return 'In Progress';
++                                    if (col === 'pending-short') return 'Pending';
++                                    if (col === 'pending-medium') return 'Pending';
++                                    if (col === 'pending-critical') return 'Critical';
++                                    return s.status === "active" ? "Active" : s.status === "waiting" ? "Waiting" : "Closed";
++                                  })()}
++                                </span>
++                                {['pending-short', 'pending-medium', 'pending-critical'].includes(getChatColorStatus(s)) && (
++                                  <span className="elapsed-time">({getElapsedMinutes(s)}m ago)</span>
++                                )}
+                               </div>
+                             </div>
+                             {s.unread > 0 && <span className="unread-badge">{s.unread}</span>}
+@@ -1968,7 +2421,8 @@ export default function Home() {
+                             <label className="switch-control" style={{ transform: 'scale(0.7)' }}><input type="checkbox" /><span className="switch-slider"></span></label>
+                             <span>Internal</span>
+                           </div>
+-                          <button className="toolbar-btn"><i className="fa-solid fa-paperclip"></i> File</button>
++                          <button className="toolbar-btn" onClick={() => fileInputRef.current?.click()}><i className="fa-solid fa-paperclip"></i> File</button>
++                          <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*,audio/*,video/*,.pdf,.doc,.docx" onChange={handleFileChange} />
+                           <select defaultValue="">
+                             <option value="">-- Auto Message --</option>
+                             <option value="greeting">α╕¬α╕ºα╕▒α╕¬α╕öα╕╡α╕äα╣êα╕░ α╕óα╕┤α╕Öα╕öα╕╡α╣âα╕½α╣ëα╕Üα╕úα╕┤α╕üα╕▓α╕ú</option>
+@@ -1981,32 +2435,53 @@ export default function Home() {
+                         <div className="chat-messages-area">
+                           {activeChat.messages.map((msg, idx) => (
+                             <div key={idx} className={`chat-bubble-wrapper ${msg.sender}`}>
+-                              <div className="chat-bubble">{msg.text}</div>
++                              <div className="chat-bubble">
++                                {msg.text}
++                                {msg.attachment && (
++                                  <div style={{ marginTop: '8px' }}>
++                                    {msg.attachment.type.startsWith('image/') ? (
++                                      <img src={msg.attachment.data} className="chat-bubble-image" alt={msg.attachment.name} onClick={() => {
++                                        const w = window.open();
++                                        w.document.write(`<img src="${msg.attachment.data}" style="max-width:100%; max-height:100%; margin:auto; display:block;"/>`);
++                                      }} />
++                                    ) : msg.attachment.type.startsWith('audio/') ? (
++                                      <audio controls src={msg.attachment.data} className="chat-bubble-audio" />
++                                    ) : msg.attachment.type.startsWith('video/') ? (
++                                      <video controls src={msg.attachment.data} className="chat-bubble-video" />
++                                    ) : (
++                                      <a href={msg.attachment.data} download={msg.attachment.name} className="file-attachment-link">
++                                        <i className="fa-solid fa-download"></i> Download {msg.attachment.name}
++                                      </a>
++                                    )}
++                                  </div>
++                                )}
++                              </div>
+                               <div className="chat-bubble-meta">{msg.sender === "bot" ? "Bot" : msg.sender === "agent" ? "Agent" : msg.sender === "system" ? "System" : activeChat.customer_name} ΓÇó {msg.time}</div>
+                             </div>
+                           ))}
+                         </div>
+ 
+-                        <div className="chat-input-area">
+-                          <textarea placeholder="Chat with customer..." value={chatMessageInput} onChange={e => setChatMessageInput(e.target.value)} onKeyDown={e => {
+-                            if (e.key === 'Enter' && !e.shiftKey && chatMessageInput.trim()) {
+-                              e.preventDefault();
+-                              const newMsg = { sender: "agent", text: chatMessageInput, time: new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) };
+-                              const updated = { ...activeChat, messages: [...activeChat.messages, newMsg], last_message: chatMessageInput, last_time: "Just now" };
+-                              setActiveChat(updated);
+-                              setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
+-                              setChatMessageInput("");
+-                            }
+-                          }} />
+-                          <button className="send-btn" onClick={() => {
+-                            if (chatMessageInput.trim()) {
+-                              const newMsg = { sender: "agent", text: chatMessageInput, time: new Date().toLocaleString("en-GB", { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) };
+-                              const updated = { ...activeChat, messages: [...activeChat.messages, newMsg], last_message: chatMessageInput, last_time: "Just now" };
+-                              setActiveChat(updated);
+-                              setChatSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
+-                              setChatMessageInput("");
+-                            }
+-                          }}>Send</button>
++                        <div className="chat-input-area" style={{ flexDirection: 'column' }}>
++                          {chatFilePreview && (
++                            <div className="file-preview-bar" style={{ width: '100%' }}>
++                              <div className="file-preview-info">
++                                <i className={chatFilePreview.type.startsWith('image/') ? 'fa-solid fa-file-image' : chatFilePreview.type.startsWith('audio/') ? 'fa-solid fa-file-audio' : chatFilePreview.type.startsWith('video/') ? 'fa-solid fa-file-video' : 'fa-solid fa-file'}></i>
++                                <span>{chatFilePreview.name}</span>
++                              </div>
++                              <button className="file-preview-remove" onClick={() => setChatFilePreview(null)}>
++                                <i className="fa-solid fa-xmark"></i>
++                              </button>
++                            </div>
++                          )}
++                          <div style={{ display: 'flex', width: '100%', gap: '8px' }}>
++                            <textarea placeholder="Chat with customer..." value={chatMessageInput} onChange={e => setChatMessageInput(e.target.value)} onKeyDown={e => {
++                              if (e.key === 'Enter' && !e.shiftKey) {
++                                e.preventDefault();
++                                handleSendChatMessage();
++                              }
++                            }} />
++                            <button className="send-btn" onClick={handleSendChatMessage}>Send</button>
++                          </div>
+                         </div>
+                       </>
+                     ) : (

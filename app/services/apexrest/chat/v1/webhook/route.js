@@ -3,6 +3,35 @@ import { query } from '@/lib/db';
 
 // Helper to generate the next opportunity or case ID from PostgreSQL database
 async function getNextOpportunityId(prefix = 'OPP-') {
+    if (prefix === 'CASE-' || prefix === 'cs') {
+        const d = new Date();
+        const bangkokDate = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Bangkok',
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit'
+        }).formatToParts(d);
+        
+        const yy = bangkokDate.find(p => p.type === 'year').value;
+        const mm = bangkokDate.find(p => p.type === 'month').value;
+        const dd = bangkokDate.find(p => p.type === 'day').value;
+        const dateStr = `${yy}${mm}${dd}`;
+        const finalPrefix = 'cs';
+        const pattern = `${finalPrefix}${dateStr}%`;
+        
+        const maxRes = await query(`SELECT id FROM opportunities WHERE id LIKE $1`, [pattern]);
+        let maxRunning = 0;
+        maxRes.rows.forEach(r => {
+            const suffix = r.id.substring(finalPrefix.length + dateStr.length);
+            const num = parseInt(suffix, 10);
+            if (!isNaN(num) && num > maxRunning) {
+                maxRunning = num;
+            }
+        });
+        const nextRunning = String(maxRunning + 1).padStart(2, '0');
+        return `${finalPrefix}${dateStr}${nextRunning}`;
+    }
+
     const maxRes = await query(`SELECT id FROM opportunities WHERE id LIKE $1`, [`${prefix}%`]);
     let maxNum = 307; // Default seed max (OPP-307)
     
@@ -65,7 +94,7 @@ export async function POST(request) {
                         });
                         resolvedOppId = newId;
                     } else if (actionName === 'CREATE_CASE') {
-                        const newId = await getNextOpportunityId('CASE-');
+                        const newId = await getNextOpportunityId('cs');
                         const title = params.subject || 'Case Inbound';
                         await createOpportunity({
                             id: newId,

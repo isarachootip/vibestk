@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query, isPostgresActive } from '@/lib/db';
+import { query, isPostgresActive, IN_MEMORY_DB } from '@/lib/db';
 import crypto from 'crypto';
 
 // GET: Facebook Webhook Verification
@@ -15,11 +15,22 @@ export async function GET(request) {
     if (isPostgresActive()) {
         try {
             const configResult = await query("SELECT config FROM social_configs WHERE platform = 'facebook'");
-            if (configResult.rows.length > 0) {
-                const config = configResult.rows[0].config;
-                verifyToken = config.verifyToken || verifyToken;
+            for (const row of configResult.rows) {
+                const config = row.config;
+                if (config.verifyToken === token) {
+                    verifyToken = token;
+                    break;
+                }
             }
         } catch (e) { /* use env fallback */ }
+    } else {
+        // In-memory fallback
+        for (const c of IN_MEMORY_DB.social_configs) {
+            if (c.platform === 'facebook' && c.config.verifyToken === token) {
+                verifyToken = token;
+                break;
+            }
+        }
     }
 
     if (mode === 'subscribe' && token === verifyToken) {
@@ -37,17 +48,20 @@ export async function POST(request) {
 
         // Get Facebook credentials from social_configs
         let appSecret = process.env.FB_APP_SECRET;
-        let pageAccessToken = process.env.FB_PAGE_ACCESS_TOKEN;
 
         if (isPostgresActive()) {
             try {
-                const configResult = await query("SELECT config FROM social_configs WHERE platform = 'facebook'");
+                const configResult = await query("SELECT config FROM social_configs WHERE platform = 'facebook' LIMIT 1");
                 if (configResult.rows.length > 0) {
                     const config = configResult.rows[0].config;
                     appSecret = config.appSecret || appSecret;
-                    pageAccessToken = config.accessToken || pageAccessToken;
                 }
             } catch (e) { /* use env fallback */ }
+        } else {
+            const match = IN_MEMORY_DB.social_configs.find(c => c.platform === 'facebook');
+            if (match) {
+                appSecret = match.config.appSecret || appSecret;
+            }
         }
 
         // Validate signature
@@ -66,6 +80,24 @@ export async function POST(request) {
 
         if (data.object === 'page') {
             for (const entry of (data.entry || [])) {
+                const pageId = entry.id; // Specific Page ID receiving the message
+                
+                // Get Page Access Token for this pageId
+                let pageAccessToken = process.env.FB_PAGE_ACCESS_TOKEN;
+                if (isPostgresActive()) {
+                    try {
+                        const configResult = await query("SELECT config FROM social_configs WHERE channel_id = $1 AND platform = 'facebook'", [pageId]);
+                        if (configResult.rows.length > 0) {
+                            pageAccessToken = configResult.rows[0].config.accessToken || pageAccessToken;
+                        }
+                    } catch (e) { /* use env fallback */ }
+                } else {
+                    const match = IN_MEMORY_DB.social_configs.find(c => c.channel_id === pageId && c.platform === 'facebook');
+                    if (match) {
+                        pageAccessToken = match.config.accessToken || pageAccessToken;
+                    }
+                }
+
                 for (const event of (entry.messaging || [])) {
                     // Handle incoming message
                     if (event.message && !event.message.is_echo) {
@@ -107,15 +139,29 @@ export async function POST(request) {
                                     [messageText, timeStr, sessionId]
                                 );
                             } else {
-                                const countResult = await query('SELECT COUNT(*) as c FROM chat_sessions');
-                                const count = parseInt(countResult.rows[0].c) + 1;
-                                sessionId = `CHAT-${String(count).padStart(3, '0')}`;
+                                 const d = new Date();
+                                 const yy = String(d.getFullYear()).slice(-2);
+                                 const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                 const dd = String(d.getDate()).padStart(2, '0');
+                                 const dateStr = `${yy}${mm}${dd}`;
+                                 const pattern = `ct${dateStr}%`;
+                                 const seqResult = await query('SELECT id FROM chat_sessions WHERE id LIKE $1', [pattern]);
+                                 let maxRunning = 0;
+                                 seqResult.rows.forEach(r => {
+                                     const suffix = r.id.substring(8); // 'ct' (2) + 'yymmdd' (6) = 8
+                                     const num = parseInt(suffix, 10);
+                                     if (!isNaN(num) && num > maxRunning) {
+                                         maxRunning = num;
+                                     }
+                                 });
+                                 const nextRunning = String(maxRunning + 1).padStart(2, '0');
+                                 sessionId = `ct${dateStr}${nextRunning}`;
 
-                                await query(
-                                    `INSERT INTO chat_sessions (id, platform, platform_user_id, customer_name, account, channel, status, unread, last_message, last_time)
-                                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-                                    [sessionId, 'facebook', senderId, customerName, customerName, 'facebook', 'active', 1, messageText, timeStr]
-                                );
+                                 await query(
+                                     `INSERT INTO chat_sessions (id, platform, platform_user_id, customer_name, account, channel, status, unread, last_message, last_time, channel_id)
+                                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                                     [sessionId, 'facebook', senderId, customerName, customerName, 'facebook', 'active', 1, messageText, timeStr, pageId]
+                                 );
                             }
 
                             // Insert message

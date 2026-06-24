@@ -13,6 +13,8 @@ export async function POST() {
         
         // Create tables
         await client.query(`
+            DROP TABLE IF EXISTS chat_session_messages CASCADE;
+            DROP TABLE IF EXISTS chat_sessions CASCADE;
             DROP TABLE IF EXISTS chat_messages CASCADE;
             DROP TABLE IF EXISTS opportunities CASCADE;
             DROP TABLE IF EXISTS agents CASCADE;
@@ -42,7 +44,7 @@ export async function POST() {
             );
 
             CREATE TABLE opportunities (
-                id VARCHAR(10) PRIMARY KEY,
+                id VARCHAR(50) PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 company VARCHAR(255) NOT NULL,
                 contact_name VARCHAR(100) NOT NULL,
@@ -65,7 +67,7 @@ export async function POST() {
 
             CREATE TABLE chat_messages (
                 id SERIAL PRIMARY KEY,
-                opportunity_id VARCHAR(10) REFERENCES opportunities(id) ON DELETE CASCADE,
+                opportunity_id VARCHAR(50) REFERENCES opportunities(id) ON DELETE CASCADE,
                 sender VARCHAR(10) NOT NULL,
                 text TEXT NOT NULL,
                 time VARCHAR(10) NOT NULL,
@@ -87,8 +89,39 @@ export async function POST() {
             );
 
             CREATE TABLE social_configs (
-                platform VARCHAR(50) PRIMARY KEY,
-                config JSONB NOT NULL
+                channel_id VARCHAR(100) PRIMARY KEY,
+                platform VARCHAR(50) NOT NULL,
+                channel_name VARCHAR(255) NOT NULL,
+                config JSONB NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE chat_sessions (
+                id VARCHAR(50) PRIMARY KEY,
+                platform VARCHAR(50) NOT NULL,
+                platform_user_id VARCHAR(100) NOT NULL,
+                customer_name VARCHAR(255) NOT NULL,
+                account VARCHAR(255) NOT NULL,
+                channel VARCHAR(50) NOT NULL,
+                status VARCHAR(50) NOT NULL DEFAULT 'active',
+                unread INT DEFAULT 0,
+                last_message TEXT,
+                last_time VARCHAR(50),
+                assigned_agent VARCHAR(50),
+                channel_id VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE chat_session_messages (
+                id SERIAL PRIMARY KEY,
+                session_id VARCHAR(50) REFERENCES chat_sessions(id) ON DELETE CASCADE,
+                sender VARCHAR(20) NOT NULL,
+                text TEXT NOT NULL,
+                message_type VARCHAR(20) DEFAULT 'text',
+                platform_message_id VARCHAR(255),
+                time VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
@@ -118,12 +151,12 @@ export async function POST() {
             ('OPP-307', 'สั่งโคมไฟสนามและระบบไฟโซล่าเซลล์', 'โรงแรมรอยัลพลาซ่า', 'คุณนันท์นภัส', '088-234-XXXX', 75000.00, 'qualified', 2);
 
             INSERT INTO customers (code, name, segment, province, last_order, last_contact, status) VALUES 
-            ('CUST-801', 'วิวัฒน์ เอนจิเนียริ่ง', 'Platinum Tier', 'กรุงเทพฯ', '150,000 บาท', '2026-05-18', 'ปกติ'),
-            ('CUST-802', 'ช่างพัฒน์ โครงหลังคาเหล็ก', 'SME Contractor', 'นนทบุรี', '32,000 บาท', '2026-05-19', 'ติดตามด่วน'),
-            ('CUST-803', 'คุณพรเพ็ญ บ้านสวยทิวลิป', 'Retail Walk-In', 'ปทุมธานี', '8,500 บาท', '2026-05-10', 'ปกติ'),
-            ('CUST-804', 'บจก. เจริญโภคภัณฑ์วิศวกรรม', 'Platinum Tier', 'ชลบุรี', '1,200,000 บาท', '2026-05-15', 'ปกติ'),
-            ('CUST-805', 'รับเหมาครบวงจร ช่างณรงค์', 'VIP Builder', 'สมุทรปราการ', '95,000 บาท', '2026-05-20', 'ปกติ'),
-            ('CUST-806', 'บจก. เอสเตท พร็อพเพอร์ตี้', 'VIP Builder', 'สมุทรสาคร', '420,000 บาท', '2026-05-14', 'ติดตามด่วน');
+            ('cm26051801', 'วิวัฒน์ เอนจิเนียริ่ง', 'Platinum Tier', 'กรุงเทพฯ', '150,000 บาท', '2026-05-18', 'ปกติ'),
+            ('cm26051901', 'ช่างพัฒน์ โครงหลังคาเหล็ก', 'SME Contractor', 'นนทบุรี', '32,000 บาท', '2026-05-19', 'ติดตามด่วน'),
+            ('cm26051001', 'คุณพรเพ็ญ บ้านสวยทิวลิป', 'Retail Walk-In', 'ปทุมธานี', '8,500 บาท', '2026-05-10', 'ปกติ'),
+            ('cm26051501', 'บจก. เจริญโภคภัณฑ์วิศวกรรม', 'Platinum Tier', 'ชลบุรี', '1,200,000 บาท', '2026-05-15', 'ปกติ'),
+            ('cm26052001', 'รับเหมาครบวงจร ช่างณรงค์', 'VIP Builder', 'สมุทรปราการ', '95,000 บาท', '2026-05-20', 'ปกติ'),
+            ('cm26051401', 'บจก. เอสเตท พร็อพเพอร์ตี้', 'VIP Builder', 'สมุทรสาคร', '420,000 บาท', '2026-05-14', 'ติดตามด่วน');
 
             INSERT INTO chat_messages (opportunity_id, sender, text, time) VALUES 
             ('OPP-301', 'client', 'สวัสดีครับ สรุปโควเทชั่นกระเบื้องแกรนิตโต้ที่ขอไปเรียบร้อยหรือยังครับ?', '10:14'),
@@ -138,9 +171,9 @@ export async function POST() {
             ('role_c', '["home", "monitor", "dashboard", "report"]'::jsonb),
             ('admin', '["home", "opportunity", "call", "case", "chat", "order", "segment", "monitor", "dashboard", "report", "management"]'::jsonb);
 
-            INSERT INTO social_configs (platform, config) VALUES
-            ('facebook', '{"pageName": "Thai Watsadu Official", "pageId": "105678912345678", "accessToken": "EAAGm0PX4ZC...mock...token"}'::jsonb),
-            ('line', '{"channelId": "1654321987", "channelSecret": "ab12cd34ef56gh78ij90kl12mn34op56", "accessToken": "eyJhbGciOiJIUzI1NiJ...mock...token"}'::jsonb);
+            INSERT INTO social_configs (channel_id, platform, channel_name, config) VALUES
+            ('105678912345678', 'facebook', 'Thai Watsadu Official', '{"pageName": "Thai Watsadu Official", "pageId": "105678912345678", "appSecret": "mock_app_secret", "accessToken": "EAAGm0PX4ZC...mock...token", "verifyToken": "stk_fb_verify_2026"}'::jsonb),
+            ('1654321987', 'line', 'LINE OA Official', '{"channelId": "1654321987", "channelSecret": "ab12cd34ef56gh78ij90kl12mn34op56", "accessToken": "eyJhbGciOiJIUzI1NiJ...mock...token"}'::jsonb);
         `);
 
         client.release();
